@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • STRING</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --warn:#ffb86b;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{max-width:1180px;margin:0 auto;padding:28px 22px 60px;}
+
+    .hero{
+      background:linear-gradient(135deg, rgba(122,162,255,.15), rgba(142,227,196,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:34px 28px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"STRING";
+      position:absolute;
+      right:-20px;
+      bottom:-18px;
+      font-size:78px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(122,162,255,.15);
+      color:#cfe0ff;
+      border:1px solid rgba(122,162,255,.3);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+
+    h1{font-size:clamp(2rem, 4vw, 3.6rem);line-height:1.08;margin:0 0 14px;letter-spacing:.2px;}
+    .lead{max-width:850px;color:var(--muted);font-size:1.08rem;margin:0;}
+
+    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;}
+    .quick-card{background:rgba(28,32,38,.82);border:1px solid var(--line);border-radius:16px;padding:14px 16px;}
+    .quick-card strong{display:block;margin-bottom:6px;color:var(--accent-2);font-size:.95rem;}
+    .quick-card span{color:var(--muted);font-size:.96rem;}
+
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:24px;margin-top:24px;align-items:start;}
+    .toc{position:sticky;top:18px;background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);}
+    .toc h2{margin:0 0 12px;font-size:1rem;}
+    .toc a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;margin-bottom:4px;transition:.2s ease;font-size:.95rem;}
+    .toc a:hover{background:rgba(122,162,255,.12);color:var(--text);}
+
+    main section{background:var(--bg-soft);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow);margin-bottom:22px;}
+    section h2{font-size:1.7rem;margin-top:0;margin-bottom:12px;}
+    section h3{margin-top:24px;margin-bottom:10px;color:#d7e4ff;font-size:1.15rem;}
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{border-left:4px solid var(--accent);background:rgba(122,162,255,.09);padding:14px 16px;border-radius:0 14px 14px 0;margin:16px 0;}
+    .warning{border-left-color:var(--danger);background:rgba(255,127,127,.10);}
+    .success{border-left-color:var(--ok);background:rgba(143,227,136,.10);}
+
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+    .compare .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+
+    .diagram{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;}
+    .chars{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .char-box{width:82px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#181c22;}
+    .char-box .idx{background:#2a3240;color:#cfe0ff;font-size:.82rem;text-align:center;padding:6px;font-family:var(--mono);}
+    .char-box .val{text-align:center;padding:15px 8px;font-weight:700;font-size:1.05rem;}
+
+    .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+    .flow-step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+    .flow-step .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.16);color:#dce8ff;font-weight:800;margin-bottom:10px;}
+
+    pre{margin:16px 0 0;background:#0d1014;border:1px solid #2b3240;border-radius:16px;padding:18px;overflow:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
+    code{font-family:var(--mono);font-size:.96rem}
+    .token-comment{color:#6e7b90}.token-key{color:#ff8ec7}.token-type{color:#7dcfff}.token-fn{color:#ffd580}.token-str{color:#b9f27c}.token-num{color:#caa6ff}.token-op{color:#d8dee9}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;margin-top:12px;background:var(--panel);border-radius:16px;overflow:hidden;border:1px solid var(--line);}
+    th,td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;}
+    th{background:#28303c;color:#edf3ff;font-size:.95rem;}
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(142,227,196,.14);color:#ccffef;border:1px solid rgba(142,227,196,.25);font-size:.78rem;font-weight:700;margin-bottom:10px;}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center;}
+    input[type="text"]{background:#11151a;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:160px;font:inherit;}
+    button{background:linear-gradient(180deg,#7aa2ff,#5f89eb);color:white;border:none;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(95,137,235,.28);transition:transform .15s ease, filter .15s ease;}
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{background:#2b3340;box-shadow:none;border:1px solid var(--line);}
+
+    .sim-output{margin-top:14px;background:#12161c;border:1px dashed #3e4757;border-radius:16px;padding:16px;}
+    .sim-cells{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .sim-item{min-width:68px;background:#1e2530;border:1px solid var(--line);border-radius:12px;overflow:hidden;text-align:center;}
+    .sim-item b{display:block;background:#2f3948;padding:4px 6px;color:#cfe0ff;font-size:.8rem;font-family:var(--mono);}
+    .sim-item span{display:block;padding:12px 10px;font-weight:700}
+
+    .quiz{display:grid;gap:16px;margin-top:14px;}
+    .question{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .question h4{margin:0 0 10px;font-size:1rem}
+    .question label{display:block;margin:8px 0;cursor:pointer}
+    .result{margin-top:14px;padding:12px 14px;border-radius:12px;background:#12161c;border:1px solid var(--line);color:var(--muted);}
+    .footer-note{text-align:center;color:#8f99aa;margin-top:10px;font-size:.92rem;}
+
+    @media (max-width: 980px){.layout{grid-template-columns:1fr}.toc{position:relative;top:auto}.quick-grid,.compare,.mini-grid,.flow{grid-template-columns:1fr 1fr}}
+    @media (max-width: 640px){body{font-size:15px}.page{padding:16px 12px 40px}.hero,main section,.toc{padding:20px}.quick-grid,.compare,.mini-grid,.flow{grid-template-columns:1fr}.char-box{width:72px}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Classe 3ª • Pagina didattica completa</div>
+      <h1>STRING</h1>
+      <p class="lead">
+        La <strong>string</strong> è il tipo di dato usato per memorizzare e gestire testi: nomi, frasi, parole, codici e in generale sequenze di caratteri. In C++ è molto più comoda dei vecchi array di caratteri.
+      </p>
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Tipo di dato</strong><span>testuale, sequenziale</span></div>
+        <div class="quick-card"><strong>Accesso</strong><span>tramite indice: <code>s[0]</code>, <code>s[1]</code>, ...</span></div>
+        <div class="quick-card"><strong>Punto di forza</strong><span>facile da leggere, concatenare e modificare</span></div>
+        <div class="quick-card"><strong>Quando usarla</strong><span>quando devi lavorare con parole o frasi</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#mental-model">2. Modello mentale</a>
+        <a href="#syntax">3. Sintassi essenziale</a>
+        <a href="#examples">4. Esempi guidati</a>
+        <a href="#methods">5. Operazioni principali</a>
+        <a href="#char-vs-string">6. char vs string</a>
+        <a href="#mistakes">7. Errori tipici</a>
+        <a href="#simulator">8. Simulatore interattivo</a>
+        <a href="#quiz">9. Mini quiz</a>
+        <a href="#summary">10. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Una string è una <strong>sequenza di caratteri</strong>. In pratica, è un modo ordinato e semplice per rappresentare un testo all'interno di un programma.
+          </p>
+          <p>
+            Con una string possiamo salvare un nome, un cognome, una città, una frase, una password, un codice e molto altro. Ogni carattere occupa una posizione e può essere letto anche singolarmente.
+          </p>
+          <div class="callout">
+            In pratica: una string è come una fila di lettere e simboli, ma gestita dal linguaggio come un unico oggetto.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>2. Modello mentale</h2>
+          <p>
+            Anche la string, come array e vector, può essere vista come una sequenza ordinata. La differenza è che qui gli elementi sono <strong>caratteri</strong>.
+          </p>
+          <div class="diagram">
+            <strong>Esempio:</strong> <code>string parola = "Ciao";</code>
+            <div class="chars">
+              <div class="char-box"><div class="idx">indice 0</div><div class="val">C</div></div>
+              <div class="char-box"><div class="idx">indice 1</div><div class="val">i</div></div>
+              <div class="char-box"><div class="idx">indice 2</div><div class="val">a</div></div>
+              <div class="char-box"><div class="idx">indice 3</div><div class="val">o</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>Contiene testo</strong>
+              <p class="muted">Ogni elemento della sequenza è un carattere.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>È indicizzata</strong>
+              <p class="muted">Puoi accedere al primo carattere con indice 0.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>È molto comoda</strong>
+              <p class="muted">Puoi confrontarla, unirla e misurarla con facilità.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="syntax">
+          <h2>3. Sintassi essenziale</h2>
+          <p>Per usare le string in C++ si include la libreria <code>&lt;string&gt;</code>.</p>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">string</span> nome <span class="token-op">=</span> <span class="token-str">"Elia"</span><span class="token-op">;</span>
+<span class="token-type">string</span> citta <span class="token-op">=</span> <span class="token-str">"Firenze"</span><span class="token-op">;</span></code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Dichiarazione</span>
+              <p><code>string testo;</code></p>
+              <p class="muted">Crea una string vuota.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Inizializzazione</span>
+              <p><code>string testo = "Ciao";</code></p>
+              <p class="muted">Crea la string e assegna subito un testo.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="examples">
+          <h2>4. Esempi guidati</h2>
+
+          <h3>Esempio 1 • Stampare una string</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">string</span> nome <span class="token-op">=</span> <span class="token-str">"Marco"</span><span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> nome <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>Qui la variabile <code>nome</code> contiene un testo e viene stampata normalmente con <code>cout</code>.</p>
+
+          <h3>Esempio 2 • Accesso ai caratteri</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">string</span> parola <span class="token-op">=</span> <span class="token-str">"Ciao"</span><span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> parola<span class="token-op">[</span><span class="token-num">0</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> parola<span class="token-op">[</span><span class="token-num">2</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>La string può essere letta per indice: il primo carattere è all'indice 0.</p>
+
+          <h3>Esempio 3 • Concatenazione</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">string</span> nome <span class="token-op">=</span> <span class="token-str">"Anna"</span><span class="token-op">;</span>
+    <span class="token-type">string</span> cognome <span class="token-op">=</span> <span class="token-str">"Rossi"</span><span class="token-op">;</span>
+    <span class="token-type">string</span> completo <span class="token-op">=</span> nome <span class="token-op">+</span> <span class="token-str">" "</span> <span class="token-op">+</span> cognome<span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> completo <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>Con l'operatore <code>+</code> possiamo unire più string in una sola.</p>
+
+          <h3>Esempio 4 • Lunghezza del testo</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">string</span> password <span class="token-op">=</span> <span class="token-str">"abc123"</span><span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> password<span class="token-op">.</span><span class="token-fn">length</span><span class="token-op">()</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>Il metodo <code>length()</code> restituisce quanti caratteri ci sono nella string.</p>
+
+          <h3>Esempio 5 • Caso realistico: nome completo e saluto</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">string</span> nome<span class="token-op">,</span> cognome<span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Inserisci il nome: "</span><span class="token-op">;</span>
+    cin <span class="token-op">&gt;&gt;</span> nome<span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Inserisci il cognome: "</span><span class="token-op">;</span>
+    cin <span class="token-op">&gt;&gt;</span> cognome<span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Ciao "</span> <span class="token-op">&lt;&lt;</span> nome <span class="token-op">&lt;&lt;</span> <span class="token-str">" "</span> <span class="token-op">&lt;&lt;</span> cognome <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <div class="callout success">
+            Questo esempio è corretto per testi senza spazi interni. Se invece vuoi leggere una frase intera, devi usare <code>getline()</code>.
+          </div>
+        </section>
+
+        <section id="methods">
+          <h2>5. Operazioni principali</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Operazione</th>
+                  <th>Cosa fa</th>
+                  <th>Esempio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Assegnazione</td>
+                  <td>Inserisce un testo nella string</td>
+                  <td><code>nome = "Luca";</code></td>
+                </tr>
+                <tr>
+                  <td>Concatenazione</td>
+                  <td>Unisce più string</td>
+                  <td><code>a + b</code></td>
+                </tr>
+                <tr>
+                  <td><code>length()</code></td>
+                  <td>Restituisce il numero di caratteri</td>
+                  <td><code>testo.length()</code></td>
+                </tr>
+                <tr>
+                  <td>Accesso per indice</td>
+                  <td>Legge un carattere specifico</td>
+                  <td><code>testo[0]</code></td>
+                </tr>
+                <tr>
+                  <td><code>getline(cin, testo)</code></td>
+                  <td>Legge una riga intera, compresi gli spazi</td>
+                  <td><code>getline(cin, frase)</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Leggere una frase intera con spazi</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;string&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">string</span> frase<span class="token-op">;</span>
+    getline<span class="token-op">(</span>cin<span class="token-op">,</span> frase<span class="token-op">)</span><span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> frase <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+        </section>
+
+        <section id="char-vs-string">
+          <h2>6. char vs string</h2>
+          <p>È molto importante non confondere <code>char</code> e <code>string</code>.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspetto</th>
+                  <th>char</th>
+                  <th>string</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Contenuto</td>
+                  <td>Un solo carattere</td>
+                  <td>Più caratteri</td>
+                </tr>
+                <tr>
+                  <td>Virgolette</td>
+                  <td>Apostrofi singoli</td>
+                  <td>Virgolette doppie</td>
+                </tr>
+                <tr>
+                  <td>Esempio</td>
+                  <td><code>char iniziale = 'A';</code></td>
+                  <td><code>string nome = "Anna";</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="compare">
+            <div class="box">
+              <h3><code>char lettera = 'C';</code></h3>
+              <p>Contiene un solo simbolo.</p>
+            </div>
+            <div class="box">
+              <h3><code>string parola = "Ciao";</code></h3>
+              <p>Contiene una sequenza di caratteri.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>7. Errori tipici degli studenti</h2>
+          <div class="card">
+            <h3>Errore 1 • Confondere <code>char</code> e <code>string</code></h3>
+            <p><code>'A'</code> è un carattere singolo. <code>"A"</code> è una string.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 2 • Usare <code>cin</code> per leggere una frase intera</h3>
+            <p><code>cin</code> si ferma allo spazio. Per leggere una frase completa bisogna usare <code>getline()</code>.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 3 • Pensare che <code>length()</code> restituisca l'ultimo indice</h3>
+            <p>Se <code>length()</code> vale 5, gli indici vanno da 0 a 4.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 4 • Uscire dai limiti della string</h3>
+<pre><code><span class="token-type">string</span> testo <span class="token-op">=</span> <span class="token-str">"ciao"</span><span class="token-op">;</span>
+cout <span class="token-op">&lt;&lt;</span> testo<span class="token-op">[</span><span class="token-num">4</span><span class="token-op">]</span><span class="token-op">;</span> <span class="token-comment">// sbagliato: ultimo indice valido è 3</span></code></pre>
+            <div class="callout warning">Gli indici validi vanno sempre da <code>0</code> a <code>length()-1</code>.</div>
+          </div>
+          <div class="card">
+            <h3>Errore 5 • Dimenticare <code>#include &lt;string&gt;</code></h3>
+            <p>In molti ambienti funziona lo stesso, ma è corretto includere sempre la libreria in modo esplicito.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>8. Simulatore interattivo</h2>
+          <p>
+            Scrivi una parola o una frase breve. Il simulatore la scompone nei suoi caratteri e mostra gli indici, così puoi vedere concretamente come una string sia una sequenza ordinata.
+          </p>
+          <div class="card">
+            <div class="controls">
+              <input id="textInput" type="text" placeholder="Scrivi un testo" />
+              <button id="analyzeBtn">Analizza string</button>
+              <button id="clearBtn" class="secondary">Svuota</button>
+            </div>
+            <div class="sim-output">
+              <div><strong>Lunghezza attuale:</strong> <span id="lenLabel">0</span></div>
+              <div class="sim-cells" id="simCells"></div>
+              <p class="footer-note" id="simMessage">Nessun testo analizzato.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>9. Mini quiz</h2>
+          <p>Controlla se i concetti essenziali sulle string sono chiari.</p>
+          <div class="quiz">
+            <div class="question">
+              <h4>1. Quale istruzione dichiara correttamente una string?</h4>
+              <label><input type="radio" name="q1" value="0"> <code>char nome = "Anna";</code></label>
+              <label><input type="radio" name="q1" value="1"> <code>string nome = "Anna";</code></label>
+              <label><input type="radio" name="q1" value="0"> <code>int nome = "Anna";</code></label>
+            </div>
+            <div class="question">
+              <h4>2. Quale funzione legge una frase intera con gli spazi?</h4>
+              <label><input type="radio" name="q2" value="0"> <code>cin >></code></label>
+              <label><input type="radio" name="q2" value="1"> <code>getline()</code></label>
+              <label><input type="radio" name="q2" value="0"> <code>push_back()</code></label>
+            </div>
+            <div class="question">
+              <h4>3. Se una string ha <code>length() = 6</code>, qual è l'ultimo indice valido?</h4>
+              <label><input type="radio" name="q3" value="0"> 6</label>
+              <label><input type="radio" name="q3" value="1"> 5</label>
+              <label><input type="radio" name="q3" value="0"> 4</label>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>10. Riepilogo finale</h2>
+          <ul>
+            <li>La string serve a memorizzare testi.</li>
+            <li>È una sequenza ordinata di caratteri.</li>
+            <li>Puoi leggere i caratteri con un indice.</li>
+            <li><code>length()</code> restituisce quanti caratteri contiene.</li>
+            <li><code>getline()</code> legge una frase intera con gli spazi.</li>
+            <li>Non bisogna confondere <code>char</code> con <code>string</code>.</li>
+          </ul>
+          <div class="callout success">
+            Se uno studente capisce bene come funziona una string, poi gestisce molto meglio input, output, confronti di testo e dati testuali in generale.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const textInput = document.getElementById('textInput');
+    const lenLabel = document.getElementById('lenLabel');
+    const simCells = document.getElementById('simCells');
+    const simMessage = document.getElementById('simMessage');
+
+    function renderString(value){
+      simCells.innerHTML = '';
+      lenLabel.textContent = value.length;
+
+      if(value.length === 0){
+        simMessage.textContent = 'Nessun testo analizzato.';
+        return;
+      }
+
+      [...value].forEach((ch, index) => {
+        const item = document.createElement('div');
+        item.className = 'sim-item';
+        item.innerHTML = `<b>indice ${index}</b><span>${ch === ' ' ? '␠' : ch}</span>`;
+        simCells.appendChild(item);
+      });
+
+      simMessage.textContent = 'Ogni carattere occupa una posizione precisa. Il simbolo ␠ indica uno spazio.';
+    }
+
+    document.getElementById('analyzeBtn').addEventListener('click', () => {
+      renderString(textInput.value);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      textInput.value = '';
+      renderString('');
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      let score = 0;
+      ['q1','q2','q3'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1') score++;
+      });
+
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Risultato: 3/3. Ottimo, i concetti base sulle string sono chiari.';
+      } else if(score === 2){
+        result.textContent = 'Risultato: 2/3. Buona base, ma c\'è ancora qualcosa da ripassare.';
+      } else if(score === 1){
+        result.textContent = 'Risultato: 1/3. Serve ripassare bene differenza tra char, string e lettura con getline().' ;
+      } else {
+        result.textContent = 'Risultato: 0/3. Conviene rileggere la pagina con attenzione e riprovare.';
+      }
+    });
+  </script>
+</body>
+</html>
