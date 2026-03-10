@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • ARRAY</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --warn:#ffb86b;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --radius:18px;
+      --radius-sm:12px;
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{
+      max-width:1180px;
+      margin:0 auto;
+      padding:28px 22px 60px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(122,162,255,.15), rgba(142,227,196,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:34px 28px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"ARRAY";
+      position:absolute;
+      right:-20px;
+      bottom:-18px;
+      font-size:78px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(122,162,255,.15);
+      color:#cfe0ff;
+      border:1px solid rgba(122,162,255,.3);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      font-size:clamp(2rem, 4vw, 3.6rem);
+      line-height:1.08;
+      margin:0 0 14px;
+      letter-spacing:.2px;
+    }
+
+    .lead{
+      max-width:850px;
+      color:var(--muted);
+      font-size:1.08rem;
+      margin:0;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .quick-card{
+      background:rgba(28,32,38,.82);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .quick-card strong{
+      display:block;
+      margin-bottom:6px;
+      color:var(--accent-2);
+      font-size:.95rem;
+    }
+
+    .quick-card span{
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:24px;
+      margin-top:24px;
+      align-items:start;
+    }
+
+    .toc{
+      position:sticky;
+      top:18px;
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .toc h2{
+      margin:0 0 12px;
+      font-size:1rem;
+    }
+
+    .toc a{
+      display:block;
+      color:var(--muted);
+      text-decoration:none;
+      padding:8px 10px;
+      border-radius:10px;
+      margin-bottom:4px;
+      transition:.2s ease;
+      font-size:.95rem;
+    }
+
+    .toc a:hover{
+      background:rgba(122,162,255,.12);
+      color:var(--text);
+    }
+
+    main section{
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    section h2{
+      font-size:1.7rem;
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+    section h3{
+      margin-top:24px;
+      margin-bottom:10px;
+      color:#d7e4ff;
+      font-size:1.15rem;
+    }
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{
+      border-left:4px solid var(--accent);
+      background:rgba(122,162,255,.09);
+      padding:14px 16px;
+      border-radius:0 14px 14px 0;
+      margin:16px 0;
+    }
+
+    .warning{
+      border-left-color:var(--danger);
+      background:rgba(255,127,127,.10);
+    }
+
+    .success{
+      border-left-color:var(--ok);
+      background:rgba(143,227,136,.10);
+    }
+
+    .compare{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .compare .box{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .diagram{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      margin-top:14px;
+    }
+
+    .cells{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .cell{
+      width:86px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:#181c22;
+    }
+
+    .cell .idx{
+      background:#2a3240;
+      color:#cfe0ff;
+      font-size:.82rem;
+      text-align:center;
+      padding:6px;
+      font-family:var(--mono);
+    }
+
+    .cell .val{
+      text-align:center;
+      padding:15px 8px;
+      font-weight:700;
+      font-size:1.05rem;
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .flow-step{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .flow-step .num{
+      display:inline-grid;
+      place-items:center;
+      width:28px;height:28px;
+      border-radius:50%;
+      background:rgba(122,162,255,.16);
+      color:#dce8ff;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    pre{
+      margin:16px 0 0;
+      background:#0d1014;
+      border:1px solid #2b3240;
+      border-radius:16px;
+      padding:18px;
+      overflow:auto;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    code{font-family:var(--mono); font-size:.96rem}
+    .token-comment{color:#6e7b90}
+    .token-key{color:#ff8ec7}
+    .token-type{color:#7dcfff}
+    .token-fn{color:#ffd580}
+    .token-str{color:#b9f27c}
+    .token-num{color:#caa6ff}
+    .token-op{color:#d8dee9}
+
+    .table-wrap{overflow:auto}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:var(--panel);
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+
+    th,td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      text-align:left;
+    }
+
+    th{
+      background:#28303c;
+      color:#edf3ff;
+      font-size:.95rem;
+    }
+
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(142,227,196,.14);
+      color:#ccffef;
+      border:1px solid rgba(142,227,196,.25);
+      font-size:.78rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+      align-items:center;
+    }
+
+    input[type="number"], select{
+      background:#11151a;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      min-width:120px;
+      font:inherit;
+    }
+
+    button{
+      background:linear-gradient(180deg,#7aa2ff,#5f89eb);
+      color:white;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(95,137,235,.28);
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{
+      background:#2b3340;
+      box-shadow:none;
+      border:1px solid var(--line);
+    }
+
+    .sim-output{
+      margin-top:14px;
+      background:#12161c;
+      border:1px dashed #3e4757;
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .sim-cells{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .sim-item{
+      min-width:68px;
+      background:#1e2530;
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      text-align:center;
+    }
+
+    .sim-item b{
+      display:block;
+      background:#2f3948;
+      padding:4px 6px;
+      color:#cfe0ff;
+      font-size:.8rem;
+      font-family:var(--mono);
+    }
+
+    .sim-item span{display:block; padding:12px 10px; font-weight:700}
+
+    .quiz{
+      display:grid;
+      gap:16px;
+      margin-top:14px;
+    }
+
+    .question{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .question h4{margin:0 0 10px; font-size:1rem}
+    .question label{display:block; margin:8px 0; cursor:pointer}
+    .result{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#12161c;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    .footer-note{
+      text-align:center;
+      color:#8f99aa;
+      margin-top:10px;
+      font-size:.92rem;
+    }
+
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .toc{position:relative; top:auto}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 640px){
+      body{font-size:15px}
+      .page{padding:16px 12px 40px}
+      .hero, main section, .toc{padding:20px}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr}
+      .cell{width:72px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Classe 3ª • Pagina didattica completa</div>
+      <h1>ARRAY</h1>
+      <p class="lead">
+        L'<strong>array</strong> è una struttura dati che permette di memorizzare più valori dello stesso tipo in una sequenza ordinata di posizioni, tutte accessibili tramite indice. È una delle basi più importanti del C++.
+      </p>
+
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Tipo di struttura</strong><span>sequenziale, a dimensione fissa</span></div>
+        <div class="quick-card"><strong>Accesso</strong><span>tramite indice: <code>a[0]</code>, <code>a[1]</code>, ...</span></div>
+        <div class="quick-card"><strong>Punto di forza</strong><span>semplice, veloce, molto diretto</span></div>
+        <div class="quick-card"><strong>Quando usarlo</strong><span>quando il numero di dati è noto prima</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#mental-model">2. Modello mentale</a>
+        <a href="#syntax">3. Sintassi essenziale</a>
+        <a href="#examples">4. Esempi guidati</a>
+        <a href="#rules">5. Regole importanti</a>
+        <a href="#array-vs-vector">6. Array vs Vector</a>
+        <a href="#mistakes">7. Errori tipici</a>
+        <a href="#simulator">8. Simulatore interattivo</a>
+        <a href="#quiz">9. Mini quiz</a>
+        <a href="#summary">10. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Un array serve per conservare <strong>più dati dello stesso tipo</strong> usando un solo nome di variabile. Invece di creare tante variabili separate, possiamo raggrupparle in una sola struttura ordinata.
+          </p>
+          <p>
+            Per esempio, invece di scrivere <code>voto1</code>, <code>voto2</code>, <code>voto3</code>, si può creare un unico array chiamato <code>voti</code> e accedere ai singoli elementi con un indice.
+          </p>
+          <div class="callout">
+            In pratica: un array è come una fila di caselle numerate, tutte dello stesso tipo, con una dimensione decisa prima.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>2. Modello mentale</h2>
+          <p>
+            Immagina un array come una fila di contenitori. Ogni contenitore ha una posizione precisa. Le posizioni sono numerate e la numerazione parte sempre da <strong>0</strong>.
+          </p>
+
+          <div class="diagram">
+            <strong>Esempio:</strong> <code>int numeri[4] = {10, 20, 30, 40};</code>
+            <div class="cells">
+              <div class="cell"><div class="idx">indice 0</div><div class="val">10</div></div>
+              <div class="cell"><div class="idx">indice 1</div><div class="val">20</div></div>
+              <div class="cell"><div class="idx">indice 2</div><div class="val">30</div></div>
+              <div class="cell"><div class="idx">indice 3</div><div class="val">40</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>È ordinato</strong>
+              <p class="muted">Gli elementi stanno in posizioni precise, una dopo l'altra.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>È indicizzato</strong>
+              <p class="muted">Per leggere o modificare un elemento si usa il suo indice.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>È fisso</strong>
+              <p class="muted">La dimensione viene stabilita all'inizio e non cambia.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="syntax">
+          <h2>3. Sintassi essenziale</h2>
+          <p>La forma generale di un array è questa:</p>
+
+<pre><code><span class="token-type">tipo</span> nomeArray<span class="token-op">[</span>dimensione<span class="token-op">]</span><span class="token-op">;</span></code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Dichiarazione</span>
+              <p><code>int numeri[5];</code></p>
+              <p class="muted">Crea un array di 5 interi, non ancora inizializzati in modo esplicito.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Inizializzazione</span>
+              <p><code>int numeri[5] = {10,20,30,40,50};</code></p>
+              <p class="muted">Crea l'array e assegna subito i valori.</p>
+            </div>
+          </div>
+
+          <h3>Deduczione automatica della dimensione</h3>
+<pre><code><span class="token-type">int</span> numeri<span class="token-op">[</span><span class="token-op">]</span> <span class="token-op">=</span> <span class="token-op">{</span><span class="token-num">10</span><span class="token-op">,</span> <span class="token-num">20</span><span class="token-op">,</span> <span class="token-num">30</span><span class="token-op">}</span><span class="token-op">;</span></code></pre>
+          <p>Qui il compilatore capisce da solo che la dimensione è 3.</p>
+        </section>
+
+        <section id="examples">
+          <h2>4. Esempi guidati</h2>
+
+          <h3>Esempio 1 • Accesso agli elementi</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">int</span> numeri<span class="token-op">[</span><span class="token-num">4</span><span class="token-op">]</span> <span class="token-op">=</span> <span class="token-op">{</span><span class="token-num">10</span><span class="token-op">,</span> <span class="token-num">20</span><span class="token-op">,</span> <span class="token-num">30</span><span class="token-op">,</span> <span class="token-num">40</span><span class="token-op">}</span><span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span><span class="token-num">0</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span><span class="token-num">2</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            L'istruzione <code>numeri[0]</code> legge il primo elemento. <code>numeri[2]</code> legge il terzo. L'indice infatti parte da 0, non da 1.
+          </p>
+
+          <h3>Esempio 2 • Modifica di un elemento</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">int</span> numeri<span class="token-op">[</span><span class="token-num">3</span><span class="token-op">]</span> <span class="token-op">=</span> <span class="token-op">{</span><span class="token-num">5</span><span class="token-op">,</span> <span class="token-num">8</span><span class="token-op">,</span> <span class="token-num">12</span><span class="token-op">}</span><span class="token-op">;</span>
+
+    numeri<span class="token-op">[</span><span class="token-num">1</span><span class="token-op">]</span> <span class="token-op">=</span> <span class="token-num">99</span><span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span><span class="token-num">1</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            L'elemento all'indice 1 viene sostituito. Prima valeva 8, poi diventa 99.
+          </p>
+
+          <h3>Esempio 3 • Uso con un ciclo</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">int</span> voti<span class="token-op">[</span><span class="token-num">5</span><span class="token-op">]</span> <span class="token-op">=</span> <span class="token-op">{</span><span class="token-num">24</span><span class="token-op">,</span> <span class="token-num">28</span><span class="token-op">,</span> <span class="token-num">30</span><span class="token-op">,</span> <span class="token-num">27</span><span class="token-op">,</span> <span class="token-num">25</span><span class="token-op">}</span><span class="token-op">;</span>
+
+    <span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> <span class="token-num">5</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>{
+        cout <span class="token-op">&lt;&lt;</span> voti<span class="token-op">[</span>i<span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    }
+}</code></pre>
+          <p>
+            Questo è uno degli usi più tipici dell'array: scorrere tutti gli elementi con un ciclo <code>for</code>.
+          </p>
+
+          <h3>Esempio 4 • Caso realistico: inserimento e media</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">int</span> numeri<span class="token-op">[</span><span class="token-num">5</span><span class="token-op">]</span><span class="token-op">;</span>
+    <span class="token-type">int</span> somma <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span>
+
+    <span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> <span class="token-num">5</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>{
+        cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Inserisci numero: "</span><span class="token-op">;</span>
+        cin <span class="token-op">&gt;&gt;</span> numeri<span class="token-op">[</span>i<span class="token-op">]</span><span class="token-op">;</span>
+        somma <span class="token-op">+=</span> numeri<span class="token-op">[</span>i<span class="token-op">]</span><span class="token-op">;</span>
+    }
+
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Media = "</span> <span class="token-op">&lt;&lt;</span> <span class="token-op">(</span><span class="token-type">float</span><span class="token-op">)</span>somma <span class="token-op">/</span> <span class="token-num">5</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            Questo esempio mostra bene quando l'array funziona bene: sappiamo già che i numeri saranno esattamente 5.
+          </p>
+        </section>
+
+        <section id="rules">
+          <h2>5. Regole importanti</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Regola</th>
+                  <th>Significato</th>
+                  <th>Esempio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Gli indici partono da 0</td>
+                  <td>Il primo elemento è in posizione 0</td>
+                  <td><code>numeri[0]</code></td>
+                </tr>
+                <tr>
+                  <td>La dimensione è fissa</td>
+                  <td>Non si può aggiungere un sesto elemento a un array di 5</td>
+                  <td><code>int a[5];</code></td>
+                </tr>
+                <tr>
+                  <td>Tutti gli elementi hanno lo stesso tipo</td>
+                  <td>Un array di int contiene solo int</td>
+                  <td><code>int numeri[4];</code></td>
+                </tr>
+                <tr>
+                  <td>Si accede con parentesi quadre</td>
+                  <td>Ogni elemento si legge o modifica con l'indice</td>
+                  <td><code>a[2] = 50;</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout success">
+            Se conosci bene indice, dimensione e ciclo <code>for</code>, hai già compreso il cuore del funzionamento degli array.
+          </div>
+        </section>
+
+        <section id="array-vs-vector">
+          <h2>6. Array vs Vector</h2>
+          <p>
+            Array e vector si assomigliano, ma non vanno confusi. Entrambi usano l'indice, però l'array ha dimensione fissa mentre il vector ha dimensione variabile.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspetto</th>
+                  <th>Array</th>
+                  <th>Vector</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Dimensione</td>
+                  <td>Fissa</td>
+                  <td>Variabile</td>
+                </tr>
+                <tr>
+                  <td>Facilità iniziale</td>
+                  <td>Più semplice</td>
+                  <td>Più comodo ma più ricco</td>
+                </tr>
+                <tr>
+                  <td>Libreria</td>
+                  <td>Non serve</td>
+                  <td>Serve <code>&lt;vector&gt;</code></td>
+                </tr>
+                <tr>
+                  <td>Quando usarlo</td>
+                  <td>Quando sai già quanti dati hai</td>
+                  <td>Quando il numero può cambiare</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="compare">
+            <div class="box">
+              <h3>Quando preferire l'array</h3>
+              <p>Quando il problema è semplice e la quantità di elementi è fissa e nota prima.</p>
+            </div>
+            <div class="box">
+              <h3>Quando preferire il vector</h3>
+              <p>Quando l'utente può inserire un numero variabile di dati o quando vuoi più flessibilità.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>7. Errori tipici degli studenti</h2>
+
+          <div class="card">
+            <h3>Errore 1 • Pensare che il primo indice sia 1</h3>
+            <p>In C++ il primo elemento è sempre all'indice <code>0</code>, non 1.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 2 • Confondere dimensione e ultimo indice</h3>
+            <p>Se un array ha dimensione 5, gli indici validi sono <code>0,1,2,3,4</code>. L'ultimo indice non è 5.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 3 • Uscire dai limiti dell'array</h3>
+<pre><code><span class="token-type">int</span> numeri<span class="token-op">[</span><span class="token-num">5</span><span class="token-op">]</span><span class="token-op">;</span>
+numeri<span class="token-op">[</span><span class="token-num">5</span><span class="token-op">]</span> <span class="token-op">=</span> <span class="token-num">100</span><span class="token-op">;</span> <span class="token-comment">// SBAGLIATO</span></code></pre>
+            <div class="callout warning">Questo accesso è fuori limite, perché l'ultimo indice valido è 4.</div>
+          </div>
+
+          <div class="card">
+            <h3>Errore 4 • Scrivere un ciclo sbagliato</h3>
+<pre><code><span class="token-comment">// SBAGLIATO</span>
+<span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;=</span> <span class="token-num">5</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>
+
+<span class="token-comment">// CORRETTO</span>
+<span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> <span class="token-num">5</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span></code></pre>
+            <p class="muted">Con <code>&lt;=</code> provi a usare anche l'indice 5, che non esiste.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 5 • Pensare che l'array possa crescere</h3>
+            <p>No: una volta creato, l'array mantiene sempre quella dimensione.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>8. Simulatore interattivo</h2>
+          <p>
+            Qui puoi simulare un array a dimensione fissa di 5 elementi. Scegli un indice e assegna un valore. In questo modo vedi bene la differenza tra <strong>indice</strong> e <strong>valore</strong>.
+          </p>
+
+          <div class="card">
+            <div class="controls">
+              <select id="indexInput">
+                <option value="0">indice 0</option>
+                <option value="1">indice 1</option>
+                <option value="2">indice 2</option>
+                <option value="3">indice 3</option>
+                <option value="4">indice 4</option>
+              </select>
+              <input id="valueInput" type="number" placeholder="Valore" />
+              <button id="setBtn">Assegna valore</button>
+              <button id="resetBtn" class="secondary">Azzera array</button>
+            </div>
+
+            <div class="sim-output">
+              <div><strong>Dimensione dell'array:</strong> 5</div>
+              <div class="sim-cells" id="simCells"></div>
+              <p class="footer-note" id="simMessage">Tutte le posizioni partono da 0.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>9. Mini quiz</h2>
+          <p>Controlla se i concetti fondamentali sono davvero chiari.</p>
+
+          <div class="quiz">
+            <div class="question">
+              <h4>1. In un array di 5 elementi, qual è il primo indice?</h4>
+              <label><input type="radio" name="q1" value="1"> 0</label>
+              <label><input type="radio" name="q1" value="0"> 1</label>
+              <label><input type="radio" name="q1" value="0"> 5</label>
+            </div>
+
+            <div class="question">
+              <h4>2. Se un array ha dimensione 4, qual è l'ultimo indice valido?</h4>
+              <label><input type="radio" name="q2" value="0"> 4</label>
+              <label><input type="radio" name="q2" value="1"> 3</label>
+              <label><input type="radio" name="q2" value="0"> 2</label>
+            </div>
+
+            <div class="question">
+              <h4>3. Un array può aumentare di dimensione durante l'esecuzione?</h4>
+              <label><input type="radio" name="q3" value="0"> Sì, sempre</label>
+              <label><input type="radio" name="q3" value="1"> No, la dimensione è fissa</label>
+              <label><input type="radio" name="q3" value="0"> Solo con il ciclo for</label>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>10. Riepilogo finale</h2>
+          <ul>
+            <li>L'array contiene più valori dello stesso tipo.</li>
+            <li>Gli elementi sono ordinati e si leggono con un indice.</li>
+            <li>Gli indici partono sempre da 0.</li>
+            <li>La dimensione si decide all'inizio e poi rimane fissa.</li>
+            <li>L'array è molto usato con i cicli <code>for</code>.</li>
+            <li>Per quantità fisse di dati è una soluzione semplice ed efficace.</li>
+          </ul>
+
+          <div class="callout success">
+            Se uno studente comprende davvero bene l'array, poi capisce con molta più facilità vector, string e molte altre strutture del C++.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const arrayData = [0,0,0,0,0];
+    const simCells = document.getElementById('simCells');
+    const simMessage = document.getElementById('simMessage');
+
+    function renderArray(){
+      simCells.innerHTML = '';
+      arrayData.forEach((value, index) => {
+        const item = document.createElement('div');
+        item.className = 'sim-item';
+        item.innerHTML = `<b>indice ${index}</b><span>${value}</span>`;
+        simCells.appendChild(item);
+      });
+    }
+
+    document.getElementById('setBtn').addEventListener('click', () => {
+      const index = Number(document.getElementById('indexInput').value);
+      const raw = document.getElementById('valueInput').value.trim();
+      if(raw === ''){
+        simMessage.textContent = 'Inserisci un valore prima di assegnarlo.';
+        return;
+      }
+      arrayData[index] = Number(raw);
+      simMessage.textContent = `Hai assegnato il valore ${Number(raw)} alla posizione ${index}.`;
+      document.getElementById('valueInput').value = '';
+      renderArray();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      for(let i = 0; i < arrayData.length; i++) arrayData[i] = 0;
+      simMessage.textContent = 'Array riportato ai valori iniziali.';
+      renderArray();
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      let score = 0;
+      ['q1','q2','q3'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1') score++;
+      });
+
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Risultato: 3/3. Ottimo, i concetti base sugli array sono chiari.';
+      } else if(score === 2){
+        result.textContent = 'Risultato: 2/3. Buona base, ma c\'è ancora qualcosa da ripassare.';
+      } else if(score === 1){
+        result.textContent = 'Risultato: 1/3. Serve ripassare bene indice, dimensione e limiti dell\'array.';
+      } else {
+        result.textContent = 'Risultato: 0/3. Conviene rileggere la pagina con attenzione e riprovare.';
+      }
+    });
+
+    renderArray();
+  </script>
+</body>
+</html>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • VECTOR</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --warn:#ffb86b;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --radius:18px;
+      --radius-sm:12px;
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{
+      max-width:1180px;
+      margin:0 auto;
+      padding:28px 22px 60px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(122,162,255,.15), rgba(142,227,196,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:34px 28px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"VECTOR";
+      position:absolute;
+      right:-20px;
+      bottom:-18px;
+      font-size:78px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(122,162,255,.15);
+      color:#cfe0ff;
+      border:1px solid rgba(122,162,255,.3);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      font-size:clamp(2rem, 4vw, 3.6rem);
+      line-height:1.08;
+      margin:0 0 14px;
+      letter-spacing:.2px;
+    }
+
+    .lead{
+      max-width:850px;
+      color:var(--muted);
+      font-size:1.08rem;
+      margin:0;
+    }
+
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .quick-card{
+      background:rgba(28,32,38,.82);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .quick-card strong{
+      display:block;
+      margin-bottom:6px;
+      color:var(--accent-2);
+      font-size:.95rem;
+    }
+
+    .quick-card span{
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:24px;
+      margin-top:24px;
+      align-items:start;
+    }
+
+    .toc{
+      position:sticky;
+      top:18px;
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .toc h2{
+      margin:0 0 12px;
+      font-size:1rem;
+    }
+
+    .toc a{
+      display:block;
+      color:var(--muted);
+      text-decoration:none;
+      padding:8px 10px;
+      border-radius:10px;
+      margin-bottom:4px;
+      transition:.2s ease;
+      font-size:.95rem;
+    }
+
+    .toc a:hover{
+      background:rgba(122,162,255,.12);
+      color:var(--text);
+    }
+
+    main section{
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    section h2{
+      font-size:1.7rem;
+      margin-top:0;
+      margin-bottom:12px;
+    }
+
+    section h3{
+      margin-top:24px;
+      margin-bottom:10px;
+      color:#d7e4ff;
+      font-size:1.15rem;
+    }
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{
+      border-left:4px solid var(--accent);
+      background:rgba(122,162,255,.09);
+      padding:14px 16px;
+      border-radius:0 14px 14px 0;
+      margin:16px 0;
+    }
+
+    .warning{
+      border-left-color:var(--danger);
+      background:rgba(255,127,127,.10);
+    }
+
+    .success{
+      border-left-color:var(--ok);
+      background:rgba(143,227,136,.10);
+    }
+
+    .compare{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .compare .box{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .diagram{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      margin-top:14px;
+    }
+
+    .cells{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .cell{
+      width:86px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:#181c22;
+    }
+
+    .cell .idx{
+      background:#2a3240;
+      color:#cfe0ff;
+      font-size:.82rem;
+      text-align:center;
+      padding:6px;
+      font-family:var(--mono);
+    }
+
+    .cell .val{
+      text-align:center;
+      padding:15px 8px;
+      font-weight:700;
+      font-size:1.05rem;
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .flow-step{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .flow-step .num{
+      display:inline-grid;
+      place-items:center;
+      width:28px;height:28px;
+      border-radius:50%;
+      background:rgba(122,162,255,.16);
+      color:#dce8ff;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    pre{
+      margin:16px 0 0;
+      background:#0d1014;
+      border:1px solid #2b3240;
+      border-radius:16px;
+      padding:18px;
+      overflow:auto;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    code{font-family:var(--mono); font-size:.96rem}
+    .token-comment{color:#6e7b90}
+    .token-key{color:#ff8ec7}
+    .token-type{color:#7dcfff}
+    .token-fn{color:#ffd580}
+    .token-str{color:#b9f27c}
+    .token-num{color:#caa6ff}
+    .token-op{color:#d8dee9}
+    .token-inc{color:#8ee3c4}
+
+    .table-wrap{overflow:auto}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      background:var(--panel);
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+
+    th,td{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      text-align:left;
+    }
+
+    th{
+      background:#28303c;
+      color:#edf3ff;
+      font-size:.95rem;
+    }
+
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(142,227,196,.14);
+      color:#ccffef;
+      border:1px solid rgba(142,227,196,.25);
+      font-size:.78rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+      align-items:center;
+    }
+
+    input[type="number"], input[type="text"], select{
+      background:#11151a;
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      min-width:120px;
+      font:inherit;
+    }
+
+    button{
+      background:linear-gradient(180deg,#7aa2ff,#5f89eb);
+      color:white;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(95,137,235,.28);
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{
+      background:#2b3340;
+      box-shadow:none;
+      border:1px solid var(--line);
+    }
+
+    .sim-output{
+      margin-top:14px;
+      background:#12161c;
+      border:1px dashed #3e4757;
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .sim-cells{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+    .sim-item{
+      min-width:68px;
+      background:#1e2530;
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      text-align:center;
+    }
+
+    .sim-item b{
+      display:block;
+      background:#2f3948;
+      padding:4px 6px;
+      color:#cfe0ff;
+      font-size:.8rem;
+      font-family:var(--mono);
+    }
+
+    .sim-item span{display:block; padding:12px 10px; font-weight:700}
+
+    .quiz{
+      display:grid;
+      gap:16px;
+      margin-top:14px;
+    }
+
+    .question{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .question h4{margin:0 0 10px; font-size:1rem}
+    .question label{display:block; margin:8px 0; cursor:pointer}
+    .result{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#12161c;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    .footer-note{
+      text-align:center;
+      color:#8f99aa;
+      margin-top:10px;
+      font-size:.92rem;
+    }
+
+    @media (max-width: 980px){
+      .layout{grid-template-columns:1fr}
+      .toc{position:relative; top:auto}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr 1fr}
+    }
+
+    @media (max-width: 640px){
+      body{font-size:15px}
+      .page{padding:16px 12px 40px}
+      .hero, main section, .toc{padding:20px}
+      .quick-grid, .compare, .mini-grid, .flow{grid-template-columns:1fr}
+      .cell{width:72px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Classe 3ª • Pagina didattica completa</div>
+      <h1>VECTOR</h1>
+      <p class="lead">
+        Il <strong>vector</strong> è un contenitore dinamico della STL che permette di memorizzare più elementi dello stesso tipo in una struttura ordinata, accessibile per indice e capace di crescere o ridursi durante l'esecuzione del programma.
+      </p>
+
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Tipo di struttura</strong><span>contenitore dinamico, sequenziale</span></div>
+        <div class="quick-card"><strong>Accesso</strong><span>tramite indice: <code>v[0]</code>, <code>v[1]</code>, ...</span></div>
+        <div class="quick-card"><strong>Punto di forza</strong><span>dimensione modificabile</span></div>
+        <div class="quick-card"><strong>Quando usarlo</strong><span>quando il numero di dati non è fisso</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#mental-model">2. Modello mentale</a>
+        <a href="#syntax">3. Sintassi essenziale</a>
+        <a href="#examples">4. Esempi guidati</a>
+        <a href="#methods">5. Metodi principali</a>
+        <a href="#array-vs-vector">6. Array vs Vector</a>
+        <a href="#mistakes">7. Errori tipici</a>
+        <a href="#simulator">8. Simulatore interattivo</a>
+        <a href="#quiz">9. Mini quiz</a>
+        <a href="#summary">10. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Un <code>vector</code> serve per gestire una collezione di dati dello stesso tipo quando <strong>non sappiamo in anticipo quanti elementi avremo</strong>, oppure quando questo numero può cambiare nel tempo.
+          </p>
+          <p>
+            Con un array classico bisogna decidere subito la dimensione. Con un vector, invece, possiamo iniziare vuoti e poi aggiungere elementi via via con <code>push_back()</code>.
+          </p>
+          <div class="callout">
+            In pratica: il vector è come un array più comodo e più flessibile, ma leggermente più complesso da capire all'inizio.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>2. Modello mentale</h2>
+          <p>
+            Immagina un vector come una fila di caselle numerate. Ogni casella contiene un valore. La differenza rispetto a un array è che il vector può allungarsi o accorciarsi mentre il programma gira.
+          </p>
+
+          <div class="diagram">
+            <strong>Esempio:</strong> <code>vector&lt;int&gt; numeri = {10, 20, 30, 40};</code>
+            <div class="cells">
+              <div class="cell"><div class="idx">indice 0</div><div class="val">10</div></div>
+              <div class="cell"><div class="idx">indice 1</div><div class="val">20</div></div>
+              <div class="cell"><div class="idx">indice 2</div><div class="val">30</div></div>
+              <div class="cell"><div class="idx">indice 3</div><div class="val">40</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>È ordinato</strong>
+              <p class="muted">Gli elementi mantengono l'ordine in cui vengono inseriti.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>È indicizzato</strong>
+              <p class="muted">Puoi accedere agli elementi con un numero che parte da 0.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>È dinamico</strong>
+              <p class="muted">Puoi aggiungere o rimuovere elementi senza riscrivere tutta la struttura.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="syntax">
+          <h2>3. Sintassi essenziale</h2>
+          <p>Per usare i vector servono la libreria <code>&lt;vector&gt;</code> e il namespace standard.</p>
+
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;vector&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">vector</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> numeri<span class="token-op">;</span>         <span class="token-comment">// vector vuoto di interi</span>
+<span class="token-type">vector</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> voti <span class="token-op">=</span> <span class="token-op">{</span><span class="token-num">28</span><span class="token-op">,</span> <span class="token-num">30</span><span class="token-op">,</span> <span class="token-num">25</span><span class="token-op">}</span><span class="token-op">;</span>
+<span class="token-type">vector</span><span class="token-op">&lt;</span><span class="token-type">string</span><span class="token-op">&gt;</span> nomi <span class="token-op">=</span> <span class="token-op">{</span><span class="token-str">"Anna"</span><span class="token-op">,</span> <span class="token-str">"Luca"</span><span class="token-op">}</span><span class="token-op">;</span></code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Forma generale</span>
+              <p><code>vector&lt;tipo&gt; nome;</code></p>
+              <p class="muted">Esempio: <code>vector&lt;float&gt; temperature;</code></p>
+            </div>
+            <div class="card">
+              <span class="badge">Con valori iniziali</span>
+              <p><code>vector&lt;int&gt; v = {1,2,3};</code></p>
+              <p class="muted">Il vector parte già popolato.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="examples">
+          <h2>4. Esempi guidati</h2>
+
+          <h3>Esempio 1 • Inserire elementi con <code>push_back()</code></h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;vector&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">vector</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> numeri<span class="token-op">;</span>
+
+    numeri<span class="token-op">.</span><span class="token-fn">push_back</span><span class="token-op">(</span><span class="token-num">10</span><span class="token-op">)</span><span class="token-op">;</span>
+    numeri<span class="token-op">.</span><span class="token-fn">push_back</span><span class="token-op">(</span><span class="token-num">20</span><span class="token-op">)</span><span class="token-op">;</span>
+    numeri<span class="token-op">.</span><span class="token-fn">push_back</span><span class="token-op">(</span><span class="token-num">30</span><span class="token-op">)</span><span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span><span class="token-num">0</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span><span class="token-num">1</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span><span class="token-num">2</span><span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+
+          <p>
+            Qui il vector parte vuoto. Ogni chiamata a <code>push_back()</code> aggiunge un elemento in fondo. Alla fine il vector contiene 10, 20, 30.
+          </p>
+
+          <h3>Esempio 2 • Leggere e stampare con un ciclo</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;vector&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">vector</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> numeri<span class="token-op">;</span>
+    <span class="token-type">int</span> valore<span class="token-op">;</span>
+
+    <span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> <span class="token-num">5</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>{
+        cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Inserisci un numero: "</span><span class="token-op">;</span>
+        cin <span class="token-op">&gt;&gt;</span> valore<span class="token-op">;</span>
+        numeri<span class="token-op">.</span><span class="token-fn">push_back</span><span class="token-op">(</span>valore<span class="token-op">)</span><span class="token-op">;</span>
+    }
+
+    <span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> numeri<span class="token-op">.</span><span class="token-fn">size</span><span class="token-op">()</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>{
+        cout <span class="token-op">&lt;&lt;</span> numeri<span class="token-op">[</span>i<span class="token-op">]</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    }
+}</code></pre>
+
+          <div class="callout success">
+            Nota importante: usare <code>numeri.size()</code> nel ciclo è meglio che scrivere un numero fisso, perché il vector può avere una dimensione variabile.
+          </div>
+
+          <h3>Esempio 3 • Caso realistico: media dei voti</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;vector&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">vector</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> voti<span class="token-op">;</span>
+    <span class="token-type">int</span> n<span class="token-op">,</span> voto<span class="token-op">,</span> somma <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Quanti voti vuoi inserire? "</span><span class="token-op">;</span>
+    cin <span class="token-op">&gt;&gt;</span> n<span class="token-op">;</span>
+
+    <span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> n<span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>{
+        cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Inserisci voto: "</span><span class="token-op">;</span>
+        cin <span class="token-op">&gt;&gt;</span> voto<span class="token-op">;</span>
+        voti<span class="token-op">.</span><span class="token-fn">push_back</span><span class="token-op">(</span>voto<span class="token-op">)</span><span class="token-op">;</span>
+        somma <span class="token-op">+=</span> voto<span class="token-op">;</span>
+    }
+
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Media = "</span> <span class="token-op">&lt;&lt;</span> <span class="token-op">(</span><span class="token-type">float</span><span class="token-op">)</span>somma <span class="token-op">/</span> voti<span class="token-op">.</span><span class="token-fn">size</span><span class="token-op">()</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            Questo esempio mostra bene <strong>perché il vector è utile</strong>: non sappiamo prima quanti voti inserirà l'utente.
+          </p>
+        </section>
+
+        <section id="methods">
+          <h2>5. Metodi principali del vector</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Metodo</th>
+                  <th>Cosa fa</th>
+                  <th>Esempio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>push_back(x)</code></td>
+                  <td>Aggiunge <code>x</code> in fondo</td>
+                  <td><code>v.push_back(5);</code></td>
+                </tr>
+                <tr>
+                  <td><code>pop_back()</code></td>
+                  <td>Rimuove l'ultimo elemento</td>
+                  <td><code>v.pop_back();</code></td>
+                </tr>
+                <tr>
+                  <td><code>size()</code></td>
+                  <td>Restituisce il numero di elementi</td>
+                  <td><code>v.size()</code></td>
+                </tr>
+                <tr>
+                  <td><code>empty()</code></td>
+                  <td>Dice se il vector è vuoto</td>
+                  <td><code>if(v.empty())</code></td>
+                </tr>
+                <tr>
+                  <td><code>clear()</code></td>
+                  <td>Elimina tutti gli elementi</td>
+                  <td><code>v.clear();</code></td>
+                </tr>
+                <tr>
+                  <td><code>at(i)</code></td>
+                  <td>Accede a un elemento con controllo sull'indice</td>
+                  <td><code>v.at(2)</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="compare">
+            <div class="box">
+              <h3><code>v[i]</code></h3>
+              <p>È veloce e comodo.</p>
+              <p class="muted">Non controlla se l'indice è fuori limite.</p>
+            </div>
+            <div class="box">
+              <h3><code>v.at(i)</code></h3>
+              <p>È più sicuro in fase di studio.</p>
+              <p class="muted">Controlla l'indice ed evita accessi sbagliati più silenziosi.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="array-vs-vector">
+          <h2>6. Array vs Vector</h2>
+          <p>
+            Gli studenti spesso confondono array e vector perché entrambi permettono l'accesso per indice. Però non sono la stessa cosa.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aspetto</th>
+                  <th>Array</th>
+                  <th>Vector</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Dimensione</td>
+                  <td>Fissa</td>
+                  <td>Variabile</td>
+                </tr>
+                <tr>
+                  <td>Aggiunta elementi</td>
+                  <td>No, non facilmente</td>
+                  <td>Sì, con <code>push_back()</code></td>
+                </tr>
+                <tr>
+                  <td>Libreria necessaria</td>
+                  <td>No</td>
+                  <td>Sì, <code>&lt;vector&gt;</code></td>
+                </tr>
+                <tr>
+                  <td>Comodità</td>
+                  <td>Più semplice</td>
+                  <td>Più flessibile</td>
+                </tr>
+                <tr>
+                  <td>Uso tipico</td>
+                  <td>Quando sai già quanti dati hai</td>
+                  <td>Quando il numero di dati può cambiare</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout">
+            Regola pratica: se la quantità di dati è incerta o cresce durante il programma, il vector è quasi sempre la scelta più naturale.
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>7. Errori tipici degli studenti</h2>
+
+          <div class="card">
+            <h3>Errore 1 • Dimenticare <code>#include &lt;vector&gt;</code></h3>
+            <p>Il compilatore non riconosce il tipo <code>vector</code>.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 2 • Usare un indice che non esiste</h3>
+            <p>Esempio sbagliato: <code>v[5]</code> quando il vector ha solo 3 elementi.</p>
+            <div class="callout warning">Gli indici validi vanno da <code>0</code> a <code>size()-1</code>.</div>
+          </div>
+
+          <div class="card">
+            <h3>Errore 3 • Confondere <code>size()</code> con l'ultimo indice</h3>
+            <p>Se <code>v.size()</code> vale 4, gli indici sono <code>0,1,2,3</code>. L'ultimo indice non è 4.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 4 • Pensare che il vector abbia dimensione fissa come un array</h3>
+            <p>Il vector può crescere. È proprio questa la sua utilità principale.</p>
+          </div>
+
+          <div class="card">
+            <h3>Errore 5 • Scrivere il ciclo con un limite sbagliato</h3>
+<pre><code><span class="token-comment">// SBAGLIATO</span>
+<span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;=</span> v<span class="token-op">.</span><span class="token-fn">size</span><span class="token-op">()</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span>
+
+<span class="token-comment">// CORRETTO</span>
+<span class="token-key">for</span><span class="token-op">(</span><span class="token-type">int</span> i <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">;</span> i <span class="token-op">&lt;</span> v<span class="token-op">.</span><span class="token-fn">size</span><span class="token-op">()</span><span class="token-op">;</span> i<span class="token-op">++</span><span class="token-op">)</span></code></pre>
+            <p class="muted">Con <code>&lt;=</code> provi ad accedere anche a una posizione che non esiste.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>8. Simulatore interattivo</h2>
+          <p>
+            Qui puoi simulare il comportamento di un vector. Inserisci un valore e aggiungilo in fondo, proprio come farebbe <code>push_back()</code>.
+          </p>
+
+          <div class="card">
+            <div class="controls">
+              <input id="valueInput" type="number" placeholder="Valore" />
+              <button id="addBtn">Aggiungi con push_back()</button>
+              <button id="removeBtn" class="secondary">Rimuovi ultimo</button>
+              <button id="clearBtn" class="secondary">Svuota</button>
+            </div>
+
+            <div class="sim-output">
+              <div><strong>Dimensione attuale:</strong> <span id="sizeLabel">0</span></div>
+              <div class="sim-cells" id="simCells"></div>
+              <p class="footer-note" id="simMessage">Il vector è vuoto.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>9. Mini quiz</h2>
+          <p>Controlla se i concetti principali sono davvero chiari.</p>
+
+          <div class="quiz">
+            <div class="question">
+              <h4>1. Qual è la caratteristica principale di un vector rispetto a un array?</h4>
+              <label><input type="radio" name="q1" value="0"> Memorizza solo stringhe</label>
+              <label><input type="radio" name="q1" value="1"> Ha dimensione dinamica</label>
+              <label><input type="radio" name="q1" value="0"> Non usa indici</label>
+            </div>
+
+            <div class="question">
+              <h4>2. Cosa fa <code>push_back(50)</code>?</h4>
+              <label><input type="radio" name="q2" value="0"> Inserisce 50 all'inizio</label>
+              <label><input type="radio" name="q2" value="1"> Inserisce 50 alla fine</label>
+              <label><input type="radio" name="q2" value="0"> Elimina 50 elementi</label>
+            </div>
+
+            <div class="question">
+              <h4>3. Se un vector ha <code>size() = 4</code>, qual è l'ultimo indice valido?</h4>
+              <label><input type="radio" name="q3" value="0"> 4</label>
+              <label><input type="radio" name="q3" value="1"> 3</label>
+              <label><input type="radio" name="q3" value="0"> 5</label>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>10. Riepilogo finale</h2>
+          <ul>
+            <li>Il <code>vector</code> è un contenitore dinamico della STL.</li>
+            <li>Contiene elementi tutti dello stesso tipo.</li>
+            <li>Gli elementi sono ordinati e accessibili tramite indice.</li>
+            <li>Può crescere con <code>push_back()</code> e ridursi con <code>pop_back()</code>.</li>
+            <li><code>size()</code> restituisce il numero di elementi, non l'ultimo indice.</li>
+            <li>È più flessibile dell'array quando la quantità di dati non è nota in anticipo.</li>
+          </ul>
+
+          <div class="callout success">
+            Se uno studente capisce bene <strong>array</strong> e <strong>vector</strong>, ha già costruito una base molto forte per affrontare le altre strutture dati del C++.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const vectorData = [];
+    const valueInput = document.getElementById('valueInput');
+    const simCells = document.getElementById('simCells');
+    const sizeLabel = document.getElementById('sizeLabel');
+    const simMessage = document.getElementById('simMessage');
+
+    function renderVector(){
+      simCells.innerHTML = '';
+      sizeLabel.textContent = vectorData.length;
+
+      if(vectorData.length === 0){
+        simMessage.textContent = 'Il vector è vuoto.';
+        return;
+      }
+
+      vectorData.forEach((value, index) => {
+        const item = document.createElement('div');
+        item.className = 'sim-item';
+        item.innerHTML = `<b>indice ${index}</b><span>${value}</span>`;
+        simCells.appendChild(item);
+      });
+
+      simMessage.textContent = 'Gli elementi mantengono l\'ordine di inserimento.';
+    }
+
+    document.getElementById('addBtn').addEventListener('click', () => {
+      const raw = valueInput.value.trim();
+      if(raw === ''){
+        simMessage.textContent = 'Inserisci un numero prima di aggiungerlo.';
+        return;
+      }
+      vectorData.push(Number(raw));
+      valueInput.value = '';
+      renderVector();
+    });
+
+    document.getElementById('removeBtn').addEventListener('click', () => {
+      if(vectorData.length === 0){
+        simMessage.textContent = 'Non puoi rimuovere: il vector è già vuoto.';
+        return;
+      }
+      vectorData.pop();
+      renderVector();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      vectorData.length = 0;
+      renderVector();
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      let score = 0;
+      ['q1','q2','q3'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1') score++;
+      });
+
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Risultato: 3/3. Ottimo, i concetti base sul vector sono chiari.';
+      } else if(score === 2){
+        result.textContent = 'Risultato: 2/3. Buona base, ma c\'è ancora un punto da ripassare.';
+      } else if(score === 1){
+        result.textContent = 'Risultato: 1/3. Serve ripassare bene differenza tra dimensione, indice e metodi principali.';
+      } else {
+        result.textContent = 'Risultato: 0/3. Conviene rileggere la pagina con attenzione e riprovare.';
+      }
+    });
+
+    renderVector();
+  </script>
+</body>
+</html>
