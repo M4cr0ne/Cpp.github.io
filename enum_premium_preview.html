@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • ENUM</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{max-width:1180px;margin:0 auto;padding:28px 22px 60px;}
+    .hero{background:linear-gradient(135deg, rgba(122,162,255,.15), rgba(142,227,196,.08));border:1px solid var(--line);border-radius:24px;padding:34px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+    .hero::after{content:"ENUM";position:absolute;right:-20px;bottom:-18px;font-size:78px;font-weight:900;letter-spacing:3px;color:rgba(255,255,255,.04);pointer-events:none;}
+    .eyebrow{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(122,162,255,.15);color:#cfe0ff;border:1px solid rgba(122,162,255,.3);font-size:.84rem;font-weight:700;letter-spacing:.4px;margin-bottom:14px;}
+    h1{font-size:clamp(2rem, 4vw, 3.6rem);line-height:1.08;margin:0 0 14px;letter-spacing:.2px;}
+    .lead{max-width:850px;color:var(--muted);font-size:1.08rem;margin:0;}
+
+    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;}
+    .quick-card{background:rgba(28,32,38,.82);border:1px solid var(--line);border-radius:16px;padding:14px 16px;}
+    .quick-card strong{display:block;margin-bottom:6px;color:var(--accent-2);font-size:.95rem;}
+    .quick-card span{color:var(--muted);font-size:.96rem;}
+
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:24px;margin-top:24px;align-items:start;}
+    .toc{position:sticky;top:18px;background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);}
+    .toc h2{margin:0 0 12px;font-size:1rem;}
+    .toc a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;margin-bottom:4px;transition:.2s ease;font-size:.95rem;}
+    .toc a:hover{background:rgba(122,162,255,.12);color:var(--text);}
+
+    main section{background:var(--bg-soft);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow);margin-bottom:22px;}
+    section h2{font-size:1.7rem;margin-top:0;margin-bottom:12px;}
+    section h3{margin-top:24px;margin-bottom:10px;color:#d7e4ff;font-size:1.15rem;}
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{border-left:4px solid var(--accent);background:rgba(122,162,255,.09);padding:14px 16px;border-radius:0 14px 14px 0;margin:16px 0;}
+    .warning{border-left-color:var(--danger);background:rgba(255,127,127,.10);}
+    .success{border-left-color:var(--ok);background:rgba(143,227,136,.10);}
+
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+    .compare .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+
+    .diagram{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;}
+    .enum-list{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+    .enum-item{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#181c22;}
+    .enum-item .name{background:#2a3240;color:#cfe0ff;font-size:.88rem;text-align:center;padding:8px;font-family:var(--mono);}
+    .enum-item .value{text-align:center;padding:16px 10px;font-weight:700;font-size:1rem;}
+
+    .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+    .flow-step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+    .flow-step .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.16);color:#dce8ff;font-weight:800;margin-bottom:10px;}
+
+    pre{margin:16px 0 0;background:#0d1014;border:1px solid #2b3240;border-radius:16px;padding:18px;overflow:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
+    code{font-family:var(--mono);font-size:.96rem}
+    .token-comment{color:#6e7b90}.token-key{color:#ff8ec7}.token-type{color:#7dcfff}.token-fn{color:#ffd580}.token-str{color:#b9f27c}.token-num{color:#caa6ff}.token-op{color:#d8dee9}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;margin-top:12px;background:var(--panel);border-radius:16px;overflow:hidden;border:1px solid var(--line);}
+    th,td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;}
+    th{background:#28303c;color:#edf3ff;font-size:.95rem;}
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(142,227,196,.14);color:#ccffef;border:1px solid rgba(142,227,196,.25);font-size:.78rem;font-weight:700;margin-bottom:10px;}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center;}
+    select,input[type="number"]{background:#11151a;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:140px;font:inherit;}
+    button{background:linear-gradient(180deg,#7aa2ff,#5f89eb);color:white;border:none;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(95,137,235,.28);transition:transform .15s ease, filter .15s ease;}
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{background:#2b3340;box-shadow:none;border:1px solid var(--line);}
+
+    .sim-output{margin-top:14px;background:#12161c;border:1px dashed #3e4757;border-radius:16px;padding:16px;}
+    .sim-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+    .sim-card{background:#1e2530;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .sim-card b{display:block;background:#2f3948;padding:7px 8px;color:#cfe0ff;font-size:.82rem;font-family:var(--mono);text-align:center}
+    .sim-card span{display:block;padding:14px 12px;font-weight:700;text-align:center}
+
+    .quiz{display:grid;gap:16px;margin-top:14px;}
+    .question{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .question h4{margin:0 0 10px;font-size:1rem}
+    .question label{display:block;margin:8px 0;cursor:pointer}
+    .result{margin-top:14px;padding:12px 14px;border-radius:12px;background:#12161c;border:1px solid var(--line);color:var(--muted);}
+    .footer-note{text-align:center;color:#8f99aa;margin-top:10px;font-size:.92rem;}
+
+    @media (max-width: 980px){.layout{grid-template-columns:1fr}.toc{position:relative;top:auto}.quick-grid,.compare,.mini-grid,.flow,.enum-list,.sim-cards{grid-template-columns:1fr 1fr}}
+    @media (max-width: 640px){body{font-size:15px}.page{padding:16px 12px 40px}.hero,main section,.toc{padding:20px}.quick-grid,.compare,.mini-grid,.flow,.enum-list,.sim-cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Classe 3ª • Pagina didattica completa</div>
+      <h1>ENUM</h1>
+      <p class="lead">
+        L'<strong>enum</strong> permette di definire un insieme limitato di valori simbolici. Serve a rendere il codice più chiaro, leggibile e meno dipendente da numeri poco significativi scritti direttamente nel programma.
+      </p>
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Tipo di costrutto</strong><span>insieme di costanti simboliche</span></div>
+        <div class="quick-card"><strong>Contenuto</strong><span>nomi associati a valori interi</span></div>
+        <div class="quick-card"><strong>Punto di forza</strong><span>codice più leggibile</span></div>
+        <div class="quick-card"><strong>Quando usarlo</strong><span>quando i valori possibili sono pochi e fissi</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#mental-model">2. Modello mentale</a>
+        <a href="#syntax">3. Sintassi essenziale</a>
+        <a href="#examples">4. Esempi guidati</a>
+        <a href="#rules">5. Regole importanti</a>
+        <a href="#enum-vs-int">6. Enum vs int</a>
+        <a href="#mistakes">7. Errori tipici</a>
+        <a href="#simulator">8. Simulatore interattivo</a>
+        <a href="#quiz">9. Mini quiz</a>
+        <a href="#summary">10. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Un enum si usa quando una variabile può assumere solo <strong>alcuni valori precisi e prestabiliti</strong>. Invece di usare numeri come 0, 1, 2 senza spiegazione, puoi dare loro nomi significativi.
+          </p>
+          <p>
+            Per esempio, se vuoi rappresentare i giorni della settimana, i livelli di difficoltà o lo stato di un ordine, un enum è molto più leggibile di una semplice variabile intera.
+          </p>
+          <div class="callout">
+            In pratica: un enum sostituisce numeri anonimi con etichette chiare che spiegano subito cosa rappresentano.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>2. Modello mentale</h2>
+          <p>
+            Immagina un enum come una lista chiusa di etichette. Ogni etichetta ha un nome e dietro le quinte corrisponde a un numero intero.
+          </p>
+          <div class="diagram">
+            <strong>Esempio:</strong> <code>enum Giorno {LUNEDI, MARTEDI, MERCOLEDI, GIOVEDI};</code>
+            <div class="enum-list">
+              <div class="enum-item"><div class="name">LUNEDI</div><div class="value">0</div></div>
+              <div class="enum-item"><div class="name">MARTEDI</div><div class="value">1</div></div>
+              <div class="enum-item"><div class="name">MERCOLEDI</div><div class="value">2</div></div>
+              <div class="enum-item"><div class="name">GIOVEDI</div><div class="value">3</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>Definisci i valori possibili</strong>
+              <p class="muted">Decidi tutti gli stati o le opzioni ammesse.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>Dai loro un nome</strong>
+              <p class="muted">Ogni valore diventa leggibile e significativo.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>Usi l'enum nel programma</strong>
+              <p class="muted">La variabile potrà assumere solo quei valori simbolici.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="syntax">
+          <h2>3. Sintassi essenziale</h2>
+          <p>La forma generale di un enum è questa:</p>
+<pre><code><span class="token-key">enum</span> NomeEnum <span class="token-op">{</span>
+    VALORE1<span class="token-op">,</span>
+    VALORE2<span class="token-op">,</span>
+    VALORE3
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+
+          <h3>Esempio base</h3>
+<pre><code><span class="token-key">enum</span> Livello <span class="token-op">{</span>
+    BASSO<span class="token-op">,</span>
+    MEDIO<span class="token-op">,</span>
+    ALTO
+<span class="token-op">}</span><span class="token-op">;</span>
+
+Livello difficolta <span class="token-op">=</span> MEDIO<span class="token-op">;</span></code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Valori automatici</span>
+              <p>Se non specifichi nulla, i valori partono da 0 e aumentano di 1.</p>
+            </div>
+            <div class="card">
+              <span class="badge">Valori espliciti</span>
+              <p>Puoi assegnare numeri precisi, per esempio <code>ROSSO = 10</code>.</p>
+            </div>
+          </div>
+
+          <h3>Valori espliciti</h3>
+<pre><code><span class="token-key">enum</span> Stato <span class="token-op">{</span>
+    SPENTO <span class="token-op">=</span> <span class="token-num">0</span><span class="token-op">,</span>
+    ACCESO <span class="token-op">=</span> <span class="token-num">1</span>
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+        </section>
+
+        <section id="examples">
+          <h2>4. Esempi guidati</h2>
+
+          <h3>Esempio 1 • Variabile con valori simbolici</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-key">enum</span> Semaforo <span class="token-op">{</span>
+    ROSSO<span class="token-op">,</span>
+    GIALLO<span class="token-op">,</span>
+    VERDE
+<span class="token-op">}</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    Semaforo stato <span class="token-op">=</span> VERDE<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            In questo caso <code>stato</code> non contiene un numero scritto a mano, ma uno dei valori previsti dall'enum <code>Semaforo</code>.
+          </p>
+
+          <h3>Esempio 2 • Uso con if</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-key">enum</span> StatoOrdine <span class="token-op">{</span>
+    IN_ATTESA<span class="token-op">,</span>
+    SPEDITO<span class="token-op">,</span>
+    CONSEGNATO
+<span class="token-op">}</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    StatoOrdine stato <span class="token-op">=</span> SPEDITO<span class="token-op">;</span>
+
+    <span class="token-key">if</span><span class="token-op">(</span>stato <span class="token-op">==</span> SPEDITO<span class="token-op">)</span>{
+        cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Ordine in viaggio"</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+    <span class="token-op">}</span>
+}</code></pre>
+          <p>Il confronto è molto più leggibile rispetto a scrivere numeri come <code>if(stato == 1)</code>.</p>
+
+          <h3>Esempio 3 • Uso con switch</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-key">enum</span> Giorno <span class="token-op">{</span>
+    LUNEDI<span class="token-op">,</span>
+    MARTEDI<span class="token-op">,</span>
+    MERCOLEDI
+<span class="token-op">}</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    Giorno oggi <span class="token-op">=</span> MARTEDI<span class="token-op">;</span>
+
+    <span class="token-key">switch</span><span class="token-op">(</span>oggi<span class="token-op">)</span>{
+        <span class="token-key">case</span> LUNEDI<span class="token-op">:</span>
+            cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Inizio settimana"</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+            <span class="token-key">break</span><span class="token-op">;</span>
+        <span class="token-key">case</span> MARTEDI<span class="token-op">:</span>
+            cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Secondo giorno"</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+            <span class="token-key">break</span><span class="token-op">;</span>
+        <span class="token-key">case</span> MERCOLEDI<span class="token-op">:</span>
+            cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Meta percorso"</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+            <span class="token-key">break</span><span class="token-op">;</span>
+    <span class="token-op">}</span>
+}</code></pre>
+
+          <h3>Esempio 4 • Caso realistico: priorità di ticket</h3>
+<pre><code><span class="token-key">enum</span> Priorita <span class="token-op">{</span>
+    BASSA<span class="token-op">,</span>
+    MEDIA<span class="token-op">,</span>
+    ALTA<span class="token-op">,</span>
+    URGENTE
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+          <div class="callout success">
+            Qui l'enum è perfetto: le priorità possibili sono poche, ben definite e non devono essere inventate liberamente dall'utente.
+          </div>
+        </section>
+
+        <section id="rules">
+          <h2>5. Regole importanti</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Regola</th>
+                  <th>Significato</th>
+                  <th>Esempio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>I valori partono da 0</td>
+                  <td>Se non specifichi nulla, il primo vale 0</td>
+                  <td><code>ROSSO = 0</code></td>
+                </tr>
+                <tr>
+                  <td>Aumentano di 1</td>
+                  <td>Ogni valore successivo cresce automaticamente</td>
+                  <td><code>GIALLO = 1</code></td>
+                </tr>
+                <tr>
+                  <td>Puoi assegnare numeri espliciti</td>
+                  <td>Controlli direttamente i valori interni</td>
+                  <td><code>ALTO = 10</code></td>
+                </tr>
+                <tr>
+                  <td>Serve quando le scelte sono limitate</td>
+                  <td>Non per valori liberi o infiniti</td>
+                  <td>giorni, stati, livelli</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout success">
+            L'enum migliora il codice soprattutto quando vuoi evitare numeri scritti "a caso" e rendere immediato il significato delle variabili.
+          </div>
+        </section>
+
+        <section id="enum-vs-int">
+          <h2>6. Enum vs int</h2>
+          <p>
+            Molti studenti all'inizio si chiedono: perché usare un enum, se posso usare un normale <code>int</code>? La risposta è nella leggibilità.
+          </p>
+          <div class="compare">
+            <div class="box">
+              <h3>Con int</h3>
+              <p><code>int stato = 2;</code></p>
+              <p class="muted">Ma 2 cosa significa? Bisogna ricordarlo a memoria.</p>
+            </div>
+            <div class="box">
+              <h3>Con enum</h3>
+              <p><code>StatoOrdine stato = CONSEGNATO;</code></p>
+              <p class="muted">Il significato è evidente già leggendo il codice.</p>
+            </div>
+          </div>
+          <div class="callout">
+            L'enum non serve a fare “più cose” dell'int, ma a scrivere codice molto più chiaro e ordinato.
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>7. Errori tipici degli studenti</h2>
+          <div class="card">
+            <h3>Errore 1 • Pensare che enum sia una lista libera di parole</h3>
+            <p>No: i valori sono fissi e definiti dal programmatore.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 2 • Confondere nome dell'enum e valori interni</h3>
+            <p><code>Giorno</code> è il tipo. <code>LUNEDI</code>, <code>MARTEDI</code> e simili sono i valori.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 3 • Dimenticare il punto e virgola finale</h3>
+<pre><code><span class="token-key">enum</span> Colore <span class="token-op">{</span>
+    ROSSO<span class="token-op">,</span>
+    VERDE<span class="token-op">,</span>
+    BLU
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+          </div>
+          <div class="card">
+            <h3>Errore 4 • Usare l'enum quando i valori non sono limitati</h3>
+            <p>Se il dato può assumere infiniti numeri o testi diversi, l'enum non è adatto.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 5 • Non capire che dietro ci sono numeri interi</h3>
+            <p>Anche se usi nomi simbolici, ogni valore dell'enum corrisponde internamente a un intero.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>8. Simulatore interattivo</h2>
+          <p>
+            Qui puoi simulare un enum di priorità. Seleziona il valore simbolico e osserva il numero associato automaticamente.
+          </p>
+          <div class="card">
+            <div class="controls">
+              <select id="enumSelect">
+                <option value="0">BASSA</option>
+                <option value="1">MEDIA</option>
+                <option value="2">ALTA</option>
+                <option value="3">URGENTE</option>
+              </select>
+              <button id="showBtn">Mostra valore enum</button>
+              <button id="resetBtn" class="secondary">Azzera</button>
+            </div>
+            <div class="sim-output">
+              <div><strong>Enum attuale:</strong> <code>Priorita</code></div>
+              <div class="sim-cards" id="simCards"></div>
+              <p class="footer-note" id="simMessage">Nessun valore selezionato.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>9. Mini quiz</h2>
+          <p>Controlla se i concetti fondamentali sull'enum sono chiari.</p>
+          <div class="quiz">
+            <div class="question">
+              <h4>1. A cosa serve principalmente un enum?</h4>
+              <label><input type="radio" name="q1" value="1"> A definire un insieme limitato di valori simbolici</label>
+              <label><input type="radio" name="q1" value="0"> A creare un ciclo</label>
+              <label><input type="radio" name="q1" value="0"> A ordinare un vector</label>
+            </div>
+            <div class="question">
+              <h4>2. Se non assegni valori espliciti, da dove parte il primo valore di un enum?</h4>
+              <label><input type="radio" name="q2" value="1"> Da 0</label>
+              <label><input type="radio" name="q2" value="0"> Da 1</label>
+              <label><input type="radio" name="q2" value="0"> Da 10</label>
+            </div>
+            <div class="question">
+              <h4>3. Perché un enum è spesso migliore di un int?</h4>
+              <label><input type="radio" name="q3" value="0"> Perché occupa sempre meno memoria</label>
+              <label><input type="radio" name="q3" value="1"> Perché rende il codice più leggibile</label>
+              <label><input type="radio" name="q3" value="0"> Perché sostituisce le string</label>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>10. Riepilogo finale</h2>
+          <ul>
+            <li>L'enum definisce un insieme limitato di valori simbolici.</li>
+            <li>Rende il codice più leggibile e meno ambiguo.</li>
+            <li>Dietro le quinte i valori corrispondono a interi.</li>
+            <li>Se non assegni numeri espliciti, la numerazione parte da 0.</li>
+            <li>È utile per stati, categorie, livelli, giorni, priorità e casi simili.</li>
+            <li>Aiuta a evitare i cosiddetti numeri “magici”.</li>
+          </ul>
+          <div class="callout success">
+            Se uno studente capisce bene l'enum, inizia a scrivere codice più leggibile, più ordinato e più facile da mantenere.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const simCards = document.getElementById('simCards');
+    const simMessage = document.getElementById('simMessage');
+    const labels = ['BASSA', 'MEDIA', 'ALTA', 'URGENTE'];
+
+    function renderEnum(index){
+      simCards.innerHTML = '';
+      labels.forEach((label, i) => {
+        const card = document.createElement('div');
+        card.className = 'sim-card';
+        card.innerHTML = `<b>${label}</b><span>${i}</span>`;
+        if(i === index){
+          card.style.outline = '2px solid #7aa2ff';
+        }
+        simCards.appendChild(card);
+      });
+      simMessage.textContent = `Hai selezionato ${labels[index]}, che corrisponde al valore intero ${index}.`;
+    }
+
+    document.getElementById('showBtn').addEventListener('click', () => {
+      const index = Number(document.getElementById('enumSelect').value);
+      renderEnum(index);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      simCards.innerHTML = '';
+      simMessage.textContent = 'Nessun valore selezionato.';
+      document.getElementById('enumSelect').value = '0';
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      let score = 0;
+      ['q1','q2','q3'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1') score++;
+      });
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Risultato: 3/3. Ottimo, i concetti base sull\'enum sono chiari.';
+      } else if(score === 2){
+        result.textContent = 'Risultato: 2/3. Buona base, ma c\'è ancora qualcosa da ripassare.';
+      } else if(score === 1){
+        result.textContent = 'Risultato: 1/3. Serve ripassare bene il legame tra nomi simbolici e valori interi.';
+      } else {
+        result.textContent = 'Risultato: 0/3. Conviene rileggere la pagina con attenzione e riprovare.';
+      }
+    });
+  </script>
+</body>
+</html>
