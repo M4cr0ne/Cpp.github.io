@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • SET</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:linear-gradient(180deg,#121418 0%, #171a20 100%);color:var(--text);font-family:var(--sans);line-height:1.65;}
+    .page{max-width:1180px;margin:0 auto;padding:28px 22px 60px;}
+    .hero{background:linear-gradient(135deg, rgba(122,162,255,.15), rgba(142,227,196,.08));border:1px solid var(--line);border-radius:24px;padding:34px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+    .hero::after{content:"SET";position:absolute;right:-20px;bottom:-18px;font-size:78px;font-weight:900;letter-spacing:3px;color:rgba(255,255,255,.04);pointer-events:none;}
+    .eyebrow{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(122,162,255,.15);color:#cfe0ff;border:1px solid rgba(122,162,255,.3);font-size:.84rem;font-weight:700;letter-spacing:.4px;margin-bottom:14px;}
+    h1{font-size:clamp(2rem,4vw,3.6rem);line-height:1.08;margin:0 0 14px;letter-spacing:.2px;}
+    .lead{max-width:850px;color:var(--muted);font-size:1.08rem;margin:0;}
+
+    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;}
+    .quick-card{background:rgba(28,32,38,.82);border:1px solid var(--line);border-radius:16px;padding:14px 16px;}
+    .quick-card strong{display:block;margin-bottom:6px;color:var(--accent-2);font-size:.95rem;}
+    .quick-card span{color:var(--muted);font-size:.96rem;}
+
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:24px;margin-top:24px;align-items:start;}
+    .toc{position:sticky;top:18px;background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);}
+    .toc h2{margin:0 0 12px;font-size:1rem;}
+    .toc a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;margin-bottom:4px;transition:.2s ease;font-size:.95rem;}
+    .toc a:hover{background:rgba(122,162,255,.12);color:var(--text);}
+
+    main section{background:var(--bg-soft);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow);margin-bottom:22px;}
+    section h2{font-size:1.7rem;margin-top:0;margin-bottom:12px;}
+    section h3{margin-top:24px;margin-bottom:10px;color:#d7e4ff;font-size:1.15rem;}
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{border-left:4px solid var(--accent);background:rgba(122,162,255,.09);padding:14px 16px;border-radius:0 14px 14px 0;margin:16px 0;}
+    .warning{border-left-color:var(--danger);background:rgba(255,127,127,.10);}
+    .success{border-left-color:var(--ok);background:rgba(143,227,136,.10);}
+
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+    .compare .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+
+    .diagram{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;}
+    .chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+    .chip{border:1px solid var(--line);border-radius:999px;background:#181c22;padding:12px 18px;font-weight:700}
+    .chip.dup{opacity:.45;text-decoration:line-through}
+
+    .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+    .flow-step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+    .flow-step .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.16);color:#dce8ff;font-weight:800;margin-bottom:10px;}
+
+    pre{margin:16px 0 0;background:#0d1014;border:1px solid #2b3240;border-radius:16px;padding:18px;overflow:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
+    code{font-family:var(--mono);font-size:.96rem}
+    .token-comment{color:#6e7b90}.token-key{color:#ff8ec7}.token-type{color:#7dcfff}.token-fn{color:#ffd580}.token-str{color:#b9f27c}.token-num{color:#caa6ff}.token-op{color:#d8dee9}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;margin-top:12px;background:var(--panel);border-radius:16px;overflow:hidden;border:1px solid var(--line);}
+    th,td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;}
+    th{background:#28303c;color:#edf3ff;font-size:.95rem;}
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(142,227,196,.14);color:#ccffef;border:1px solid rgba(142,227,196,.25);font-size:.78rem;font-weight:700;margin-bottom:10px;}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center;}
+    input[type="number"]{background:#11151a;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:140px;font:inherit;}
+    button{background:linear-gradient(180deg,#7aa2ff,#5f89eb);color:white;border:none;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(95,137,235,.28);transition:transform .15s ease, filter .15s ease;}
+    button:hover{transform:translateY(-1px);filter:brightness(1.04)}
+    button.secondary{background:#2b3340;box-shadow:none;border:1px solid var(--line);}
+
+    .sim-output{margin-top:14px;background:#12161c;border:1px dashed #3e4757;border-radius:16px;padding:16px;}
+    .sim-cards{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .sim-card{background:#1e2530;border:1px solid var(--line);border-radius:999px;padding:12px 18px;font-weight:700}
+
+    .quiz{display:grid;gap:16px;margin-top:14px;}
+    .question{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .question h4{margin:0 0 10px;font-size:1rem}
+    .question label{display:block;margin:8px 0;cursor:pointer}
+    .result{margin-top:14px;padding:12px 14px;border-radius:12px;background:#12161c;border:1px solid var(--line);color:var(--muted);}
+    .footer-note{text-align:center;color:#8f99aa;margin-top:10px;font-size:.92rem;}
+
+    @media (max-width: 980px){.layout{grid-template-columns:1fr}.toc{position:relative;top:auto}.quick-grid,.compare,.mini-grid,.flow{grid-template-columns:1fr 1fr}}
+    @media (max-width: 640px){body{font-size:15px}.page{padding:16px 12px 40px}.hero,main section,.toc{padding:20px}.quick-grid,.compare,.mini-grid,.flow{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Classe 3ª • Pagina didattica completa</div>
+      <h1>SET</h1>
+      <p class="lead">
+        Il <strong>set</strong> è un contenitore STL che memorizza valori <strong>unici</strong>. Serve quando vuoi conservare elementi senza duplicati e verificare facilmente se un valore è presente oppure no.
+      </p>
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Tipo di contenitore</strong><span>associativo, insieme di valori unici</span></div>
+        <div class="quick-card"><strong>Accesso</strong><span>non tramite indice</span></div>
+        <div class="quick-card"><strong>Punto di forza</strong><span>elimina automaticamente i duplicati</span></div>
+        <div class="quick-card"><strong>Quando usarlo</strong><span>quando conta la presenza del valore, non la posizione</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#mental-model">2. Modello mentale</a>
+        <a href="#syntax">3. Sintassi essenziale</a>
+        <a href="#examples">4. Esempi guidati</a>
+        <a href="#methods">5. Operazioni principali</a>
+        <a href="#set-vs-vector">6. Set vs Vector</a>
+        <a href="#mistakes">7. Errori tipici</a>
+        <a href="#simulator">8. Simulatore interattivo</a>
+        <a href="#quiz">9. Mini quiz</a>
+        <a href="#summary">10. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Un set serve quando vuoi memorizzare valori senza ripetizioni. Se provi a inserire due volte lo stesso elemento, il set ne conserverà una sola copia.
+          </p>
+          <p>
+            È molto utile, per esempio, per tenere traccia di codici unici, numeri già visti, categorie presenti o nomi distinti.
+          </p>
+          <div class="callout">
+            In pratica: il set funziona come un insieme matematico, dove un elemento può esserci oppure no, ma non può comparire due volte.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>2. Modello mentale</h2>
+          <p>
+            Immagina di raccogliere numeri in una scatola speciale. Ogni volta che inserisci un numero già presente, la scatola lo rifiuta perché lo considera duplicato.
+          </p>
+          <div class="diagram">
+            <strong>Esempio:</strong> inserimento di <code>5, 8, 5, 3</code>
+            <div class="chips">
+              <div class="chip">5</div>
+              <div class="chip">8</div>
+              <div class="chip dup">5</div>
+              <div class="chip">3</div>
+            </div>
+            <p class="muted" style="margin-top:12px">Risultato nel set: 3, 5, 8</p>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>Inserisci un valore</strong>
+              <p class="muted">Se non c'è già, viene aggiunto.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>Controllo automatico</strong>
+              <p class="muted">Il set verifica se il valore è già presente.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>Niente duplicati</strong>
+              <p class="muted">Ogni valore compare al massimo una volta.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="syntax">
+          <h2>3. Sintassi essenziale</h2>
+          <p>Per usare il set serve la libreria <code>&lt;set&gt;</code>.</p>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;set&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">set</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> numeri<span class="token-op">;</span></code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">Forma generale</span>
+              <p><code>set&lt;tipo&gt; nome;</code></p>
+              <p class="muted">Esempio: <code>set&lt;string&gt; nomi;</code></p>
+            </div>
+            <div class="card">
+              <span class="badge">Valori unici</span>
+              <p>Il set conserva solo elementi distinti.</p>
+              <p class="muted">Un secondo inserimento uguale non crea un duplicato.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="examples">
+          <h2>4. Esempi guidati</h2>
+
+          <h3>Esempio 1 • Inserire valori</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">#include</span> <span class="token-str">&lt;set&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-type">set</span><span class="token-op">&lt;</span><span class="token-type">int</span><span class="token-op">&gt;</span> numeri<span class="token-op">;</span>
+
+    numeri<span class="token-op">.</span><span class="token-fn">insert</span><span class="token-op">(</span><span class="token-num">5</span><span class="token-op">)</span><span class="token-op">;</span>
+    numeri<span class="token-op">.</span><span class="token-fn">insert</span><span class="token-op">(</span><span class="token-num">8</span><span class="token-op">)</span><span class="token-op">;</span>
+    numeri<span class="token-op">.</span><span class="token-fn">insert</span><span class="token-op">(</span><span class="token-num">5</span><span class="token-op">)</span><span class="token-op">;</span>
+}</code></pre>
+          <p>
+            Anche se il numero 5 viene inserito due volte, nel set resterà una sola volta.
+          </p>
+
+          <h3>Esempio 2 • Scorrere un set</h3>
+<pre><code><span class="token-key">for</span><span class="token-op">(</span><span class="token-key">int</span> n <span class="token-op">:</span> numeri<span class="token-op">)</span>{
+    cout <span class="token-op">&lt;&lt;</span> n <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            Il set si può scorrere con un ciclo range-based. Non si usa l'indice come nei vector.
+          </p>
+
+          <h3>Esempio 3 • Verificare se un valore esiste</h3>
+<pre><code><span class="token-key">if</span><span class="token-op">(</span>numeri<span class="token-op">.</span><span class="token-fn">count</span><span class="token-op">(</span><span class="token-num">8</span><span class="token-op">)</span><span class="token-op">)</span>{
+    cout <span class="token-op">&lt;&lt;</span> <span class="token-str">"Presente"</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            <code>count()</code> restituisce 1 se il valore è presente, 0 se non c'è.
+          </p>
+
+          <h3>Esempio 4 • Caso realistico: classi già visitate</h3>
+<pre><code><span class="token-type">set</span><span class="token-op">&lt;</span><span class="token-type">string</span><span class="token-op">&gt;</span> classi<span class="token-op">;</span>
+
+classi<span class="token-op">.</span><span class="token-fn">insert</span><span class="token-op">(</span><span class="token-str">"3A"</span><span class="token-op">)</span><span class="token-op">;</span>
+classi<span class="token-op">.</span><span class="token-fn">insert</span><span class="token-op">(</span><span class="token-str">"4B"</span><span class="token-op">)</span><span class="token-op">;</span>
+classi<span class="token-op">.</span><span class="token-fn">insert</span><span class="token-op">(</span><span class="token-str">"3A"</span><span class="token-op">)</span><span class="token-op">;</span></code></pre>
+          <div class="callout success">
+            Il set è perfetto quando vuoi sapere quali elementi distinti sono presenti, senza interessarti a quante volte sono stati inseriti.
+          </div>
+        </section>
+
+        <section id="methods">
+          <h2>5. Operazioni principali</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Operazione</th>
+                  <th>Cosa fa</th>
+                  <th>Esempio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>insert(x)</code></td>
+                  <td>Inserisce un valore se non è già presente</td>
+                  <td><code>s.insert(5);</code></td>
+                </tr>
+                <tr>
+                  <td><code>count(x)</code></td>
+                  <td>Controlla se un valore esiste</td>
+                  <td><code>s.count(8)</code></td>
+                </tr>
+                <tr>
+                  <td><code>erase(x)</code></td>
+                  <td>Elimina un valore</td>
+                  <td><code>s.erase(5);</code></td>
+                </tr>
+                <tr>
+                  <td><code>size()</code></td>
+                  <td>Restituisce quanti elementi distinti ci sono</td>
+                  <td><code>s.size()</code></td>
+                </tr>
+                <tr>
+                  <td><code>empty()</code></td>
+                  <td>Dice se il set è vuoto</td>
+                  <td><code>s.empty()</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="set-vs-vector">
+          <h2>6. Set vs Vector</h2>
+          <p>
+            Set e vector contengono entrambi più dati, ma non hanno lo stesso scopo.
+          </p>
+          <div class="compare">
+            <div class="box">
+              <h3>Vector</h3>
+              <p>Permette duplicati e usa indici.</p>
+              <p class="muted">È utile quando contano ordine e posizione.</p>
+            </div>
+            <div class="box">
+              <h3>Set</h3>
+              <p>Non permette duplicati e non usa indici.</p>
+              <p class="muted">È utile quando conta solo la presenza distinta dei valori.</p>
+            </div>
+          </div>
+          <div class="callout">
+            Regola pratica: se vuoi evitare ripetizioni in automatico, il set è spesso più adatto del vector.
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>7. Errori tipici degli studenti</h2>
+          <div class="card">
+            <h3>Errore 1 • Pensare che il set conservi i duplicati</h3>
+            <p>No: il set mantiene solo valori unici.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 2 • Cercare di usare un indice</h3>
+            <p>Non puoi fare <code>s[0]</code> come in un vector.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 3 • Confondere presenza e frequenza</h3>
+            <p>Il set dice se un valore c'è oppure no, non quante volte è stato inserito.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 4 • Usare il set quando servono i duplicati</h3>
+            <p>Se devi conservare tutte le ripetizioni, il set non è la scelta giusta.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 5 • Dimenticare che conta la distinzione dei valori</h3>
+            <p>Il senso del set non è l'ordine numerico, ma il fatto che ogni elemento sia unico.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>8. Simulatore interattivo</h2>
+          <p>
+            Qui puoi simulare un set di numeri. Inserisci valori e osserva come i duplicati vengano ignorati automaticamente.
+          </p>
+          <div class="card">
+            <div class="controls">
+              <input id="valueInput" type="number" placeholder="Valore" />
+              <button id="addBtn">Inserisci nel set</button>
+              <button id="resetBtn" class="secondary">Azzera</button>
+            </div>
+            <div class="sim-output">
+              <div><strong>Set simulato:</strong> <code>set&lt;int&gt;</code></div>
+              <div class="sim-cards" id="simCards"></div>
+              <p class="footer-note" id="simMessage">Nessun valore inserito.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>9. Mini quiz</h2>
+          <p>Controlla se i concetti fondamentali sul set sono chiari.</p>
+          <div class="quiz">
+            <div class="question">
+              <h4>1. Qual è la caratteristica principale di un set?</h4>
+              <label><input type="radio" name="q1" value="1"> Contiene solo valori unici</label>
+              <label><input type="radio" name="q1" value="0"> Usa sempre indici numerici</label>
+              <label><input type="radio" name="q1" value="0"> Conserva tutti i duplicati</label>
+            </div>
+            <div class="question">
+              <h4>2. Cosa succede se inserisci due volte lo stesso valore?</h4>
+              <label><input type="radio" name="q2" value="1"> Rimane una sola copia</label>
+              <label><input type="radio" name="q2" value="0"> Il set va in errore</label>
+              <label><input type="radio" name="q2" value="0"> Vengono inserite entrambe</label>
+            </div>
+            <div class="question">
+              <h4>3. Un set usa gli indici come un vector?</h4>
+              <label><input type="radio" name="q3" value="0"> Sì</label>
+              <label><input type="radio" name="q3" value="1"> No</label>
+              <label><input type="radio" name="q3" value="0"> Solo con i numeri interi</label>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>10. Riepilogo finale</h2>
+          <ul>
+            <li>Il set contiene valori unici.</li>
+            <li>Non permette duplicati.</li>
+            <li>Non si usa con indici come array o vector.</li>
+            <li>È utile per verificare la presenza di un valore.</li>
+            <li>Funziona bene quando conta l'insieme distinto degli elementi.</li>
+            <li>È adatto a codici, categorie, numeri già visti e casi simili.</li>
+          </ul>
+          <div class="callout success">
+            Se uno studente capisce bene il set, inizia a distinguere chiaramente tra “lista di elementi” e “insieme di valori unici”, che è un passaggio logico molto importante.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const data = new Set();
+    const simCards = document.getElementById('simCards');
+    const simMessage = document.getElementById('simMessage');
+
+    function renderSet(){
+      simCards.innerHTML = '';
+      const values = Array.from(data).sort((a,b) => a-b);
+      if(values.length === 0){
+        simMessage.textContent = 'Nessun valore inserito.';
+        return;
+      }
+      values.forEach(value => {
+        const card = document.createElement('div');
+        card.className = 'sim-card';
+        card.textContent = value;
+        simCards.appendChild(card);
+      });
+      simMessage.textContent = 'Ogni valore compare una sola volta. I duplicati vengono ignorati.';
+    }
+
+    document.getElementById('addBtn').addEventListener('click', () => {
+      const raw = document.getElementById('valueInput').value.trim();
+      if(raw === ''){
+        simMessage.textContent = 'Inserisci un valore prima di aggiungerlo.';
+        return;
+      }
+      data.add(Number(raw));
+      document.getElementById('valueInput').value = '';
+      renderSet();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      data.clear();
+      simCards.innerHTML = '';
+      simMessage.textContent = 'Nessun valore inserito.';
+      document.getElementById('valueInput').value = '';
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      let score = 0;
+      ['q1','q2','q3'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1') score++;
+      });
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Risultato: 3/3. Ottimo, i concetti base sul set sono chiari.';
+      } else if(score === 2){
+        result.textContent = 'Risultato: 2/3. Buona base, ma c\'è ancora qualcosa da ripassare.';
+      } else if(score === 1){
+        result.textContent = 'Risultato: 1/3. Serve ripassare bene differenza tra unicità, duplicati e indice.';
+      } else {
+        result.textContent = 'Risultato: 0/3. Conviene rileggere la pagina con attenzione e riprovare.';
+      }
+    });
+  </script>
+</body>
+</html>
