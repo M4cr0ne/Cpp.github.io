@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • Manuale Interattivo</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --sans:"Segoe UI",Arial,sans-serif;
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.6;
+    }
+
+    .page{
+      max-width:1280px;
+      margin:0 auto;
+      padding:28px 22px 60px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, rgba(122,162,255,.16), rgba(142,227,196,.08));
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:34px 30px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"C++";
+      position:absolute;
+      right:-8px;
+      bottom:-20px;
+      font-size:110px;
+      font-weight:900;
+      color:rgba(255,255,255,.04);
+      letter-spacing:4px;
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(122,162,255,.15);
+      color:#cfe0ff;
+      border:1px solid rgba(122,162,255,.3);
+      font-size:.84rem;
+      font-weight:700;
+      letter-spacing:.4px;
+      margin-bottom:14px;
+    }
+
+    h1{
+      font-size:clamp(2.1rem, 4vw, 3.9rem);
+      line-height:1.05;
+      margin:0 0 14px;
+    }
+
+    .lead{
+      max-width:900px;
+      color:var(--muted);
+      font-size:1.08rem;
+      margin:0;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .hero-card{
+      background:rgba(28,32,38,.82);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .hero-card strong{
+      display:block;
+      margin-bottom:6px;
+      color:var(--accent-2);
+      font-size:.95rem;
+    }
+
+    .hero-card span{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .section{
+      margin-top:24px;
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+
+    .section h2{
+      margin:0 0 10px;
+      font-size:1.6rem;
+    }
+
+    .section p{
+      margin:0 0 14px;
+      color:var(--muted);
+    }
+
+    .category{
+      margin-top:18px;
+    }
+
+    .category-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+      color:#dce8ff;
+      font-size:1.05rem;
+      font-weight:700;
+    }
+
+    .badge{
+      display:inline-block;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(142,227,196,.14);
+      color:#ccffef;
+      border:1px solid rgba(142,227,196,.25);
+      font-size:.76rem;
+      font-weight:700;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      transition:transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      border-color:#4b5870;
+      background:#242a34;
+    }
+
+    .card h3{
+      margin:0 0 8px;
+      font-size:1.08rem;
+      color:#edf3ff;
+    }
+
+    .card p{
+      margin:0 0 14px;
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .card a{
+      display:inline-block;
+      color:#dce8ff;
+      text-decoration:none;
+      font-weight:700;
+      padding:9px 12px;
+      border-radius:12px;
+      background:rgba(122,162,255,.14);
+      border:1px solid rgba(122,162,255,.28);
+    }
+
+    .card a:hover{
+      background:rgba(122,162,255,.2);
+    }
+
+    .callout{
+      border-left:4px solid var(--accent);
+      background:rgba(122,162,255,.09);
+      padding:14px 16px;
+      border-radius:0 14px 14px 0;
+      margin-top:14px;
+    }
+
+    .steps{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:16px;
+    }
+
+    .step{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .step .num{
+      display:inline-grid;
+      place-items:center;
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:rgba(122,162,255,.16);
+      color:#dce8ff;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    .step strong{
+      display:block;
+      margin-bottom:8px;
+      color:#edf3ff;
+    }
+
+    .step span{
+      color:var(--muted);
+    }
+
+    .footer-note{
+      margin-top:22px;
+      text-align:center;
+      color:#8f99aa;
+      font-size:.92rem;
+    }
+
+    @media (max-width: 1100px){
+      .hero-grid, .grid, .steps{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media (max-width: 700px){
+      .page{padding:16px 12px 40px}
+      .hero, .section{padding:20px}
+      .hero-grid, .grid, .steps{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Manuale interattivo per la classe 3ª</div>
+      <h1>Homepage del corso</h1>
+      <p class="lead">
+        Questo sito raccoglie gli argomenti principali di C++ in una forma più chiara, leggibile e approfondita. Ogni pagina è pensata per studiare davvero: teoria, esempi guidati, errori tipici, mini quiz e piccole simulazioni interattive.
+      </p>
+
+      <div class="hero-grid">
+        <div class="hero-card"><strong>Obiettivo</strong><span>capire i concetti, non solo memorizzare sintassi</span></div>
+        <div class="hero-card"><strong>Metodo</strong><span>spiegazioni chiare, esempi, confronto tra strutture</span></div>
+        <div class="hero-card"><strong>Uso</strong><span>studio, ripasso, recupero e preparazione alle verifiche</span></div>
+        <div class="hero-card"><strong>Stile</strong><span>tema scuro, gerarchia visiva chiara, lettura più facile</span></div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Come usare il sito</h2>
+      <p>Il percorso consigliato è partire dalle basi e poi salire verso strutture dati e contenitori più evoluti.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <strong>Studia la teoria</strong>
+          <span>Leggi la spiegazione iniziale e il modello mentale dell'argomento.</span>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <strong>Guarda gli esempi</strong>
+          <span>Osserva il codice, confronta i casi e nota gli errori tipici.</span>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <strong>Verificati</strong>
+          <span>Usa simulatore e mini quiz per controllare se hai capito davvero.</span>
+        </div>
+      </div>
+      <div class="callout">
+        Consiglio: per un apprendimento solido, segui l'ordine proposto qui sotto invece di saltare da un argomento all'altro in modo casuale.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Argomenti del sito</h2>
+      <p>Le pagine sono raggruppate per area logica, così gli argomenti risultano più facili da collocare mentalmente.</p>
+
+      <div class="category">
+        <div class="category-title">Fondamenti <span class="badge">base indispensabile</span></div>
+        <div class="grid">
+          <div class="card">
+            <h3>VARIABILI</h3>
+            <p>Il punto di partenza assoluto: tipo, nome, valore e uso dei dati in memoria.</p>
+            <a href="VARIABILI.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>STRING</h3>
+            <p>Gestione del testo in C++: parole, frasi, caratteri, lunghezza e input con spazi.</p>
+            <a href="STRING.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>ENUM</h3>
+            <p>Valori simbolici per rendere il codice più leggibile e meno dipendente da numeri “magici”.</p>
+            <a href="ENUM.html">Apri pagina</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="category">
+        <div class="category-title">Strutture composte e OOP <span class="badge">organizzazione dei dati</span></div>
+        <div class="grid">
+          <div class="card">
+            <h3>STRUCT</h3>
+            <p>Raggruppare più dati collegati nello stesso oggetto logico.</p>
+            <a href="STRUCT.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>CLASS</h3>
+            <p>Modello di oggetti con attributi, metodi e controllo dell'accesso.</p>
+            <a href="CLASS.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>LAMBDA</h3>
+            <p>Funzioni anonime scritte direttamente nel punto in cui servono.</p>
+            <a href="LAMBDA.html">Apri pagina</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="category">
+        <div class="category-title">Sequenze di dati <span class="badge">strutture ordinate</span></div>
+        <div class="grid">
+          <div class="card">
+            <h3>ARRAY</h3>
+            <p>Sequenza a dimensione fissa, base fondamentale per capire l'accesso tramite indice.</p>
+            <a href="ARRAY.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>VECTOR</h3>
+            <p>Sequenza dinamica, molto flessibile e centrale nello studio del C++ moderno.</p>
+            <a href="VECTOR.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>LIST</h3>
+            <p>Sequenza collegata, utile quando la lista viene modificata spesso.</p>
+            <a href="LIST.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>DEQUE</h3>
+            <p>Sequenza a doppia estremità, comoda per lavorare bene davanti e dietro.</p>
+            <a href="DEQUE.html">Apri pagina</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="category">
+        <div class="category-title">Contenitori associativi <span class="badge">relazioni e unicità</span></div>
+        <div class="grid">
+          <div class="card">
+            <h3>SET</h3>
+            <p>Valori unici, senza duplicati, perfetti per ragionare per presenza o assenza.</p>
+            <a href="SET.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>MAP</h3>
+            <p>Coppie chiave-valore, ideali quando vuoi cercare un dato tramite nome o codice.</p>
+            <a href="MAP.html">Apri pagina</a>
+          </div>
+          <div class="card">
+            <h3>CONTAINER STL</h3>
+            <p>Panoramica generale per capire le famiglie dei contenitori e scegliere quello giusto.</p>
+            <a href="CONTAINER_STL.html">Apri pagina</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Percorso consigliato</h2>
+      <p>Per uno studio ordinato, questo è l'ordine migliore:</p>
+      <div class="grid">
+        <div class="card">
+          <h3>1. Basi</h3>
+          <p>VARIABILI → STRING → ENUM</p>
+        </div>
+        <div class="card">
+          <h3>2. Dati composti</h3>
+          <p>STRUCT → CLASS → LAMBDA</p>
+        </div>
+        <div class="card">
+          <h3>3. Sequenze</h3>
+          <p>ARRAY → VECTOR → LIST → DEQUE</p>
+        </div>
+        <div class="card">
+          <h3>4. Associazioni</h3>
+          <p>SET → MAP → CONTAINER STL</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">Homepage del manuale C++ • versione dark didattica per la classe 3ª</p>
+  </div>
+</body>
+</html>
