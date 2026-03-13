@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>C++ • LAMBDA</title>
+  <style>
+    :root{
+      --bg:#15171b;
+      --bg-soft:#1c2026;
+      --panel:#20252d;
+      --panel-2:#262c36;
+      --line:#343b48;
+      --text:#e8ecf3;
+      --muted:#a8b1c1;
+      --accent:#7aa2ff;
+      --accent-2:#8ee3c4;
+      --danger:#ff7f7f;
+      --ok:#8fe388;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --mono:"Cascadia Code","Consolas","Courier New",monospace;
+      --sans:"Segoe UI",Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#121418 0%, #171a20 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.65;
+    }
+
+    .page{max-width:1180px;margin:0 auto;padding:28px 22px 60px;}
+    .hero{background:linear-gradient(135deg, rgba(122,162,255,.15), rgba(142,227,196,.08));border:1px solid var(--line);border-radius:24px;padding:34px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+    .hero::after{content:"LAMBDA";position:absolute;right:-20px;bottom:-18px;font-size:78px;font-weight:900;letter-spacing:3px;color:rgba(255,255,255,.04);pointer-events:none;}
+    .eyebrow{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(122,162,255,.15);color:#cfe0ff;border:1px solid rgba(122,162,255,.3);font-size:.84rem;font-weight:700;letter-spacing:.4px;margin-bottom:14px;}
+    h1{font-size:clamp(2rem, 4vw, 3.6rem);line-height:1.08;margin:0 0 14px;letter-spacing:.2px;}
+    .lead{max-width:850px;color:var(--muted);font-size:1.08rem;margin:0;}
+
+    .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;}
+    .quick-card{background:rgba(28,32,38,.82);border:1px solid var(--line);border-radius:16px;padding:14px 16px;}
+    .quick-card strong{display:block;margin-bottom:6px;color:var(--accent-2);font-size:.95rem;}
+    .quick-card span{color:var(--muted);font-size:.96rem;}
+
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:24px;margin-top:24px;align-items:start;}
+    .toc{position:sticky;top:18px;background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);}
+    .toc h2{margin:0 0 12px;font-size:1rem;}
+    .toc a{display:block;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;margin-bottom:4px;transition:.2s ease;font-size:.95rem;}
+    .toc a:hover{background:rgba(122,162,255,.12);color:var(--text);}
+
+    main section{background:var(--bg-soft);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow);margin-bottom:22px;}
+    section h2{font-size:1.7rem;margin-top:0;margin-bottom:12px;}
+    section h3{margin-top:24px;margin-bottom:10px;color:#d7e4ff;font-size:1.15rem;}
+
+    p{margin:0 0 12px}
+    ul,ol{margin:8px 0 14px 22px}
+    li{margin-bottom:7px}
+    .muted{color:var(--muted)}
+
+    .callout{border-left:4px solid var(--accent);background:rgba(122,162,255,.09);padding:14px 16px;border-radius:0 14px 14px 0;margin:16px 0;}
+    .warning{border-left-color:var(--danger);background:rgba(255,127,127,.10);}
+    .success{border-left-color:var(--ok);background:rgba(143,227,136,.10);}
+
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+    .compare .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+
+    .diagram{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;}
+    .lambda-parts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+    .part{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#181c22;}
+    .part .name{background:#2a3240;color:#cfe0ff;font-size:.88rem;text-align:center;padding:8px;font-family:var(--mono);}
+    .part .value{text-align:center;padding:16px 10px;font-weight:700;font-size:1rem;}
+
+    .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+    .flow-step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
+    .flow-step .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.16);color:#dce8ff;font-weight:800;margin-bottom:10px;}
+
+    pre{margin:16px 0 0;background:#0d1014;border:1px solid #2b3240;border-radius:16px;padding:18px;overflow:auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
+    code{font-family:var(--mono);font-size:.96rem}
+    .token-comment{color:#6e7b90}.token-key{color:#ff8ec7}.token-type{color:#7dcfff}.token-fn{color:#ffd580}.token-str{color:#b9f27c}.token-num{color:#caa6ff}.token-op{color:#d8dee9}
+
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse;margin-top:12px;background:var(--panel);border-radius:16px;overflow:hidden;border:1px solid var(--line);}
+    th,td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;}
+    th{background:#28303c;color:#edf3ff;font-size:.95rem;}
+    tr:last-child td{border-bottom:none}
+
+    .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(142,227,196,.14);color:#ccffef;border:1px solid rgba(142,227,196,.25);font-size:.78rem;font-weight:700;margin-bottom:10px;}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center;}
+    input[type="number"]{background:#11151a;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:130px;font:inherit;}
+    button{background:linear-gradient(180deg,#7aa2ff,#5f89eb);color:white;border:none;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(95,137,235,.28);transition:transform .15s ease, filter .15s ease;}
+    button:hover{transform:translateY(-1px); filter:brightness(1.04)}
+    button.secondary{background:#2b3340;box-shadow:none;border:1px solid var(--line);}
+
+    .sim-output{margin-top:14px;background:#12161c;border:1px dashed #3e4757;border-radius:16px;padding:16px;}
+    .sim-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .sim-card{background:#1e2530;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .sim-card b{display:block;background:#2f3948;padding:7px 8px;color:#cfe0ff;font-size:.82rem;font-family:var(--mono);text-align:center}
+    .sim-card span{display:block;padding:14px 12px;font-weight:700;text-align:center}
+
+    .quiz{display:grid;gap:16px;margin-top:14px;}
+    .question{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;}
+    .question h4{margin:0 0 10px;font-size:1rem}
+    .question label{display:block;margin:8px 0;cursor:pointer}
+    .result{margin-top:14px;padding:12px 14px;border-radius:12px;background:#12161c;border:1px solid var(--line);color:var(--muted);}
+    .footer-note{text-align:center;color:#8f99aa;margin-top:10px;font-size:.92rem;}
+
+    @media (max-width: 980px){.layout{grid-template-columns:1fr}.toc{position:relative;top:auto}.quick-grid,.compare,.mini-grid,.flow,.lambda-parts,.sim-cards{grid-template-columns:1fr 1fr}}
+    @media (max-width: 640px){body{font-size:15px}.page{padding:16px 12px 40px}.hero,main section,.toc{padding:20px}.quick-grid,.compare,.mini-grid,.flow,.lambda-parts,.sim-cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="eyebrow">C++ • Classe 3ª • Pagina didattica completa</div>
+      <h1>LAMBDA</h1>
+      <p class="lead">
+        Una <strong>lambda</strong> è una funzione scritta direttamente nel punto in cui serve. È utile quando vuoi definire un comportamento veloce, breve e locale, senza creare una funzione separata con un nome esterno.
+      </p>
+      <div class="quick-grid">
+        <div class="quick-card"><strong>Tipo di costrutto</strong><span>funzione anonima</span></div>
+        <div class="quick-card"><strong>Contenuto</strong><span>parametri + corpo + eventuale ritorno</span></div>
+        <div class="quick-card"><strong>Punto di forza</strong><span>codice breve e locale</span></div>
+        <div class="quick-card"><strong>Quando usarla</strong><span>quando una funzione serve solo in quel punto</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="toc">
+        <h2>Indice della pagina</h2>
+        <a href="#idea">1. Idea chiave</a>
+        <a href="#mental-model">2. Modello mentale</a>
+        <a href="#syntax">3. Sintassi essenziale</a>
+        <a href="#examples">4. Esempi guidati</a>
+        <a href="#capture">5. Capture e uso locale</a>
+        <a href="#lambda-vs-function">6. Lambda vs funzione normale</a>
+        <a href="#mistakes">7. Errori tipici</a>
+        <a href="#simulator">8. Simulatore interattivo</a>
+        <a href="#quiz">9. Mini quiz</a>
+        <a href="#summary">10. Riepilogo</a>
+      </aside>
+
+      <main>
+        <section id="idea">
+          <h2>1. Idea chiave</h2>
+          <p>
+            Una lambda è, in sostanza, una funzione scritta “al volo”, proprio dove ti serve. Invece di dichiarare una funzione separata sopra o sotto il <code>main()</code>, puoi scrivere direttamente una piccola funzione all'interno del codice.
+          </p>
+          <p>
+            Questo è utile quando la funzione è breve, semplice e non verrà riutilizzata in molti punti diversi del programma.
+          </p>
+          <div class="callout">
+            In pratica: una lambda è una mini-funzione locale, molto comoda per azioni veloci e ben circoscritte.
+          </div>
+        </section>
+
+        <section id="mental-model">
+          <h2>2. Modello mentale</h2>
+          <p>
+            Immagina di avere bisogno di una piccola regola, per esempio “somma due numeri” o “controlla se un numero è pari”, ma solo in un punto del programma. Invece di costruire una funzione completa con nome, puoi usare una lambda.
+          </p>
+          <div class="diagram">
+            <strong>Esempio:</strong> <code>[](int a, int b){ return a + b; }</code>
+            <div class="lambda-parts">
+              <div class="part"><div class="name">capture</div><div class="value">[]</div></div>
+              <div class="part"><div class="name">parametri</div><div class="value">(int a, int b)</div></div>
+              <div class="part"><div class="name">corpo</div><div class="value">{ return a+b; }</div></div>
+              <div class="part"><div class="name">uso</div><div class="value">subito o assegnata</div></div>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="flow-step">
+              <div class="num">1</div>
+              <strong>Scrivi la funzione</strong>
+              <p class="muted">La definisci esattamente dove serve.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">2</div>
+              <strong>Le dai parametri</strong>
+              <p class="muted">Come una funzione normale, se servono.</p>
+            </div>
+            <div class="flow-step">
+              <div class="num">3</div>
+              <strong>La esegui o la salvi</strong>
+              <p class="muted">Puoi usarla subito oppure assegnarla a una variabile.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="syntax">
+          <h2>3. Sintassi essenziale</h2>
+          <p>La forma generale di una lambda è questa:</p>
+<pre><code><span class="token-op">[</span>capture<span class="token-op">]</span><span class="token-op">(</span>parametri<span class="token-op">)</span> <span class="token-op">{</span>
+    corpo
+<span class="token-op">}</span></code></pre>
+
+          <h3>Esempio base</h3>
+<pre><code><span class="token-key">auto</span> somma <span class="token-op">=</span> <span class="token-op">[</span><span class="token-op">]</span><span class="token-op">(</span><span class="token-type">int</span> a<span class="token-op">,</span> <span class="token-type">int</span> b<span class="token-op">)</span> <span class="token-op">{</span>
+    <span class="token-key">return</span> a <span class="token-op">+</span> b<span class="token-op">;</span>
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+
+          <div class="mini-grid">
+            <div class="card">
+              <span class="badge">capture []</span>
+              <p>Indica quali variabili esterne la lambda può usare.</p>
+            </div>
+            <div class="card">
+              <span class="badge">auto</span>
+              <p>Spesso si usa <code>auto</code> per lasciare al compilatore il tipo della lambda.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="examples">
+          <h2>4. Esempi guidati</h2>
+
+          <h3>Esempio 1 • Lambda che somma due numeri</h3>
+<pre><code><span class="token-key">#include</span> <span class="token-str">&lt;iostream&gt;</span>
+<span class="token-key">using namespace</span> <span class="token-type">std</span><span class="token-op">;</span>
+
+<span class="token-type">int</span> <span class="token-fn">main</span><span class="token-op">()</span>{
+    <span class="token-key">auto</span> somma <span class="token-op">=</span> <span class="token-op">[</span><span class="token-op">]</span><span class="token-op">(</span><span class="token-type">int</span> a<span class="token-op">,</span> <span class="token-type">int</span> b<span class="token-op">)</span> <span class="token-op">{</span>
+        <span class="token-key">return</span> a <span class="token-op">+</span> b<span class="token-op">;</span>
+    <span class="token-op">}</span><span class="token-op">;</span>
+
+    cout <span class="token-op">&lt;&lt;</span> somma<span class="token-op">(</span><span class="token-num">4</span><span class="token-op">,</span> <span class="token-num">6</span><span class="token-op">)</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span>
+}</code></pre>
+          <p>
+            La lambda viene salvata nella variabile <code>somma</code> e poi richiamata come una normale funzione.
+          </p>
+
+          <h3>Esempio 2 • Lambda che controlla se un numero è pari</h3>
+<pre><code><span class="token-key">auto</span> pari <span class="token-op">=</span> <span class="token-op">[</span><span class="token-op">]</span><span class="token-op">(</span><span class="token-type">int</span> n<span class="token-op">)</span> <span class="token-op">{</span>
+    <span class="token-key">return</span> n <span class="token-op">%</span> <span class="token-num">2</span> <span class="token-op">==</span> <span class="token-num">0</span><span class="token-op">;</span>
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+          <p>
+            Qui la lambda restituisce un valore booleano: <code>true</code> se il numero è pari, <code>false</code> altrimenti.
+          </p>
+
+          <h3>Esempio 3 • Lambda usata subito</h3>
+<pre><code>cout <span class="token-op">&lt;&lt;</span> <span class="token-op">[</span><span class="token-op">]</span><span class="token-op">(</span><span class="token-type">int</span> x<span class="token-op">)</span> <span class="token-op">{</span>
+    <span class="token-key">return</span> x <span class="token-op">*</span> x<span class="token-op">;</span>
+<span class="token-op">}</span><span class="token-op">(</span><span class="token-num">5</span><span class="token-op">)</span> <span class="token-op">&lt;&lt;</span> endl<span class="token-op">;</span></code></pre>
+          <p>
+            In questo caso la lambda viene definita e chiamata immediatamente, senza essere assegnata a una variabile.
+          </p>
+
+          <h3>Esempio 4 • Caso realistico: aggiungere IVA</h3>
+<pre><code><span class="token-key">auto</span> aggiungiIVA <span class="token-op">=</span> <span class="token-op">[</span><span class="token-op">]</span><span class="token-op">(</span><span class="token-type">float</span> prezzo<span class="token-op">)</span> <span class="token-op">{</span>
+    <span class="token-key">return</span> prezzo <span class="token-op">*</span> <span class="token-num">1.22</span><span class="token-op">;</span>
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+          <div class="callout success">
+            Le lambda sono utili quando la logica è breve, chiara e non ha senso essere separata in una funzione con nome esterno.
+          </div>
+        </section>
+
+        <section id="capture">
+          <h2>5. Capture e uso locale</h2>
+          <p>
+            La parte tra parentesi quadre indica la <strong>capture</strong>, cioè quali variabili esterne la lambda può usare. Per una terza, la cosa più importante da ricordare è questa:
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Capture</th>
+                  <th>Significato</th>
+                  <th>Esempio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>[]</code></td>
+                  <td>Non usa variabili esterne</td>
+                  <td><code>[] (int x) { return x*x; }</code></td>
+                </tr>
+                <tr>
+                  <td><code>[a]</code></td>
+                  <td>Usa la variabile esterna <code>a</code></td>
+                  <td><code>[a](int x){ return x+a; }</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Esempio con capture</h3>
+<pre><code><span class="token-type">int</span> bonus <span class="token-op">=</span> <span class="token-num">10</span><span class="token-op">;</span>
+
+<span class="token-key">auto</span> aggiungiBonus <span class="token-op">=</span> <span class="token-op">[</span>bonus<span class="token-op">]</span><span class="token-op">(</span><span class="token-type">int</span> prezzo<span class="token-op">)</span> <span class="token-op">{</span>
+    <span class="token-key">return</span> prezzo <span class="token-op">+</span> bonus<span class="token-op">;</span>
+<span class="token-op">}</span><span class="token-op">;</span></code></pre>
+          <div class="callout">
+            Per un livello iniziale, va benissimo concentrarsi soprattutto sulle lambda con <code>[]</code> vuoto, che sono più facili da capire.
+          </div>
+        </section>
+
+        <section id="lambda-vs-function">
+          <h2>6. Lambda vs funzione normale</h2>
+          <p>
+            Una lambda non sostituisce sempre una funzione normale. Serve soprattutto per casi brevi e locali.
+          </p>
+          <div class="compare">
+            <div class="box">
+              <h3>Funzione normale</h3>
+              <p>Meglio quando la logica è lunga, importante o riutilizzata più volte.</p>
+            </div>
+            <div class="box">
+              <h3>Lambda</h3>
+              <p>Meglio quando la logica è breve e serve solo in quel punto del codice.</p>
+            </div>
+          </div>
+          <div class="callout">
+            Regola pratica: se una funzione è piccola e temporanea, la lambda può essere una scelta elegante. Se è centrale nel programma, meglio una funzione normale.
+          </div>
+        </section>
+
+        <section id="mistakes">
+          <h2>7. Errori tipici degli studenti</h2>
+          <div class="card">
+            <h3>Errore 1 • Pensare che una lambda sia qualcosa di totalmente diverso da una funzione</h3>
+            <p>In realtà è sempre una funzione, solo scritta in forma anonima e locale.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 2 • Dimenticare parentesi quadre, tonde o graffe</h3>
+            <p>La sintassi della lambda è più compatta, quindi è facile dimenticare un simbolo.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 3 • Usare lambda troppo complesse</h3>
+            <p>Se la logica diventa lunga, è meglio una funzione normale con nome.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 4 • Non capire la capture</h3>
+            <p>La parte tra quadre serve a dire quali variabili esterne possono essere usate dalla lambda.</p>
+          </div>
+          <div class="card">
+            <h3>Errore 5 • Pensare che <code>auto</code> sia opzionale solo per stile</h3>
+            <p>Spesso è il modo più comodo per memorizzare una lambda, perché il suo tipo reale è complesso.</p>
+          </div>
+        </section>
+
+        <section id="simulator">
+          <h2>8. Simulatore interattivo</h2>
+          <p>
+            Qui puoi simulare una lambda che somma due numeri. L'idea è visualizzare una mini-funzione locale che riceve parametri e restituisce un risultato.
+          </p>
+          <div class="card">
+            <div class="controls">
+              <input id="aInput" type="number" placeholder="Primo numero" />
+              <input id="bInput" type="number" placeholder="Secondo numero" />
+              <button id="runBtn">Esegui lambda</button>
+              <button id="resetBtn" class="secondary">Azzera</button>
+            </div>
+            <div class="sim-output">
+              <div><strong>Lambda simulata:</strong> <code>[](int a, int b){ return a + b; }</code></div>
+              <div class="sim-cards" id="simCards"></div>
+              <p class="footer-note" id="simMessage">Nessuna esecuzione ancora effettuata.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="quiz">
+          <h2>9. Mini quiz</h2>
+          <p>Controlla se i concetti fondamentali sulla lambda sono chiari.</p>
+          <div class="quiz">
+            <div class="question">
+              <h4>1. Cos'è una lambda?</h4>
+              <label><input type="radio" name="q1" value="1"> Una funzione anonima scritta direttamente dove serve</label>
+              <label><input type="radio" name="q1" value="0"> Un tipo di array</label>
+              <label><input type="radio" name="q1" value="0"> Una struct speciale</label>
+            </div>
+            <div class="question">
+              <h4>2. A cosa serve la parte tra parentesi quadre?</h4>
+              <label><input type="radio" name="q2" value="1"> A indicare la capture</label>
+              <label><input type="radio" name="q2" value="0"> A contenere il return</label>
+              <label><input type="radio" name="q2" value="0"> A definire il tipo int</label>
+            </div>
+            <div class="question">
+              <h4>3. Quando una lambda è particolarmente comoda?</h4>
+              <label><input type="radio" name="q3" value="1"> Quando la logica è breve e locale</label>
+              <label><input type="radio" name="q3" value="0"> Quando devi scrivere 200 righe di codice</label>
+              <label><input type="radio" name="q3" value="0"> Quando vuoi sostituire tutte le classi</label>
+            </div>
+          </div>
+          <div class="controls">
+            <button id="quizBtn">Correggi quiz</button>
+          </div>
+          <div class="result" id="quizResult">Nessuna risposta ancora corretta.</div>
+        </section>
+
+        <section id="summary">
+          <h2>10. Riepilogo finale</h2>
+          <ul>
+            <li>La lambda è una funzione anonima.</li>
+            <li>Si scrive direttamente nel punto in cui serve.</li>
+            <li>È utile per operazioni brevi e locali.</li>
+            <li>Può avere parametri, return e corpo come una funzione normale.</li>
+            <li>La parte tra quadre indica la capture.</li>
+            <li>Spesso si assegna a una variabile con <code>auto</code>.</li>
+          </ul>
+          <div class="callout success">
+            Se uno studente capisce bene la lambda, inizia a padroneggiare una scrittura del C++ più moderna, compatta e flessibile.
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const simCards = document.getElementById('simCards');
+    const simMessage = document.getElementById('simMessage');
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      const a = Number(document.getElementById('aInput').value || 0);
+      const b = Number(document.getElementById('bInput').value || 0);
+      const result = a + b;
+
+      simCards.innerHTML = `
+        <div class="sim-card"><b>parametro a</b><span>${a}</span></div>
+        <div class="sim-card"><b>parametro b</b><span>${b}</span></div>
+        <div class="sim-card"><b>return</b><span>${result}</span></div>
+      `;
+      simMessage.textContent = 'La lambda ha ricevuto due parametri e ha restituito la loro somma.';
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('aInput').value = '';
+      document.getElementById('bInput').value = '';
+      simCards.innerHTML = '';
+      simMessage.textContent = 'Nessuna esecuzione ancora effettuata.';
+    });
+
+    document.getElementById('quizBtn').addEventListener('click', () => {
+      let score = 0;
+      ['q1','q2','q3'].forEach(name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        if(checked && checked.value === '1') score++;
+      });
+      const result = document.getElementById('quizResult');
+      if(score === 3){
+        result.textContent = 'Risultato: 3/3. Ottimo, i concetti base sulla lambda sono chiari.';
+      } else if(score === 2){
+        result.textContent = 'Risultato: 2/3. Buona base, ma c\'è ancora qualcosa da ripassare.';
+      } else if(score === 1){
+        result.textContent = 'Risultato: 1/3. Serve ripassare bene sintassi, capture e uso locale della lambda.';
+      } else {
+        result.textContent = 'Risultato: 0/3. Conviene rileggere la pagina con attenzione e riprovare.';
+      }
+    });
+  </script>
+</body>
+</html>
